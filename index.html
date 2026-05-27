@@ -226,7 +226,7 @@ const LANGS = {
     passwordUpdated: 'Şifreniz güncellendi ✓',
     backToLogin: '← Giriş sayfasına dön',
     alreadyHaveAccount: 'Zaten hesabınız var mı?',
-    welcomeInvite: 'Emlak Ofisim'e Hoş Geldiniz',
+    welcomeInvite: "Emlak Ofisim'e Hoş Geldiniz",
     inviteDesc: 'Hesabınızı oluşturmak için bilgilerinizi doldurun',
     phone: 'Telefon', createAccount: 'Hesabımı Oluştur',
     emailRequired: 'E-posta zorunlu', passwordMin: 'Şifre en az 6 karakter olmalı',
@@ -325,9 +325,9 @@ const LANGS = {
     companyLabel: 'Şirket / Ofis Adı', companyPlaceholder: 'Şirket adı',
     userLimit: 'Kullanıcı Limiti', statusLabel2: 'Durum',
     brokerName: 'Broker Adı', brokerEmail: 'Broker E-posta',
-    brokerInviteInfo: 'Broker'a davet maili gönderilecek.',
+    brokerInviteInfo: "Broker'a davet maili gönderilecek.",
     totalCompanies: 'Toplam Şirket', totalUsers: 'Toplam Kullanıcı', activeCompanies: 'Aktif',
-    noCompanies: 'Henüz şirket yok', companyCreated: 'Şirket oluşturuldu, Broker'a davet maili gönderildi ✓',
+    noCompanies: 'Henüz şirket yok', companyCreated: "Şirket oluşturuldu, Broker'a davet maili gönderildi ✓",
     companyUpdated: 'Şirket güncellendi ✓', roleUpdated: 'Rol güncellendi ✓',
     companyNameRequired: 'Şirket adı zorunlu', brokerEmailRequired: 'Broker e-postası zorunlu',
     hasUsers: (n) => `Bu şirkette ${n} kullanıcı var. Silmeden önce kullanıcıları kaldırın.`,
@@ -630,7 +630,7 @@ function parseFiyat(v){return String(v).replace(/\./g,'').replace(/,/g,'');}
 
 function bc(val){
   const m={
-    'Satılık':'b-sat','Kiralık':'b-kir',t('residential'):'b-kon',t('land'):'b-ars','Tarla':'b-tar',
+    'Satılık':'b-sat','Kiralık':'b-kir','Konut':'b-kon','Arsa':'b-ars','Tarla':'b-tar',
     'Köyiçi İmar':'b-koy','Köyiçi İmarlı':'b-koy','Diğer':'b-dig',
     'Aktif':'b-akt','Beklemede':'b-bek','Kapandı':'b-kap','Acil':'b-aci',
     'Satıldı':'b-satildi','Kiralandı':'b-kiraland',
