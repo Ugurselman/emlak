@@ -119,17 +119,18 @@ tbody tr.hr{display:none}
 .ab:disabled{opacity:.3;cursor:not-allowed}
 .empty{padding:44px;text-align:center;color:var(--tx3)}.empty i{font-size:28px;display:block;margin-bottom:8px}.empty p{font-size:13px}
 .av{width:28px;height:28px;border-radius:50%;background:var(--prl);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--pr);flex-shrink:0}
-.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px}
-.modal{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);width:100%;max-width:620px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.18)}
-@media(max-width:640px){.overlay{align-items:flex-end;padding:0}.modal{border-radius:var(--r) var(--r) 0 0;max-height:92vh}}
+.overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.45);display:flex;align-items:center;justify-content:center;z-index:1000;padding:16px;box-sizing:border-box}
+.modal{background:var(--sf);border-radius:var(--r);border:1px solid var(--bd);width:100%;max-width:600px;max-height:88vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.18);position:relative;box-sizing:border-box}
+.mb{padding:16px;display:flex;flex-direction:column;gap:11px;box-sizing:border-box}
+@media(max-width:640px){.overlay{align-items:flex-end;padding:0}.modal{border-radius:12px 12px 0 0;max-height:92vh;width:100%}}
 .mh{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:var(--sf);z-index:1}
 .mh h3{font-size:14px;font-weight:600}
 .mx{width:28px;height:28px;border:1px solid var(--bd);background:transparent;border-radius:5px;cursor:pointer;color:var(--tx2);font-size:15px;display:flex;align-items:center;justify-content:center}
 .mx:hover{background:var(--sf2)}
-.mb{padding:18px;display:flex;flex-direction:column;gap:11px}
+.mb{padding:16px;display:flex;flex-direction:column;gap:11px;box-sizing:border-box}
 .mf{padding:11px 18px;border-top:1px solid var(--bd);display:flex;justify-content:flex-end;gap:8px;position:sticky;bottom:0;background:var(--sf)}
-.fr{display:grid;grid-template-columns:1fr 1fr;gap:9px}
-.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:9px;width:100%;box-sizing:border-box}
+.fr3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;width:100%;box-sizing:border-box}
 .fg{display:flex;flex-direction:column;gap:4px}
 .fg label{font-size:11px;color:var(--tx2);font-weight:500}
 .fg input,.fg select,.fg textarea{width:100%;font-size:13px;padding:8px 9px;border:1px solid var(--bd);border-radius:var(--rs);background:var(--sf);color:var(--tx);outline:none;-webkit-appearance:none;font-family:inherit}
@@ -1146,9 +1147,8 @@ function openModal(type,rid){
       <div class="fg"><label>Tip</label><select id="f_tip" onchange="updatePortfoyList(this.value,'')"><option${(!item||item.tip==='Satış')?' selected':''}>Satış</option><option${(item&&item.tip==='Kiralama')?' selected':''}>Kiralama</option></select></div>
     </div>
     <div class="fg"><label>Portföy <span style="color:#991b1b">*</span></label>
-      <select id="f_portfoy" required>
-        <option value="">Önce tip seçin…</option>
-      </select>
+      <input id="f_portfoy" list="portfoy-list" placeholder="Portföy seçin veya yazın…" autocomplete="off" required>
+      <datalist id="portfoy-list"></datalist>
     </div>
       <div class="fg"><label>Müşteri</label><input id="f_musteri" value="${item?item.musteriAd||'':''}" placeholder="Müşteri adı"></div>
     </div>
@@ -1260,8 +1260,11 @@ function kAC(){
 // ── KAYDET ─────────────────────────────────────────────
 
 function updatePortfoyList(tip, curVal=''){
-  const sel=el('f_portfoy');
-  if(!sel)return;
+  const inp=el('f_portfoy');
+  const dl=el('portfoy-list');
+  if(!inp||!dl)return;
+  // Mevcut değeri koru
+  if(curVal)inp.value=curVal;
   let filtered=[];
   if(tip==='Satış'){
     filtered=portfolio.filter(p=>p.tip==='Satılık');
@@ -1270,22 +1273,11 @@ function updatePortfoyList(tip, curVal=''){
   } else {
     filtered=[...portfolio];
   }
-  const matchFound=filtered.some(p=>p.baslik===curVal);
-  let opts='<option value="">Portföy seçin…</option>';
-  // Eğer mevcut değer listede yoksa (eski kayıt), ekle
-  if(curVal&&!matchFound){
-    opts+=`<option value="${curVal}" selected>${curVal} (önceki kayıt)</option>`;
-  }
-  if(filtered.length===0){
-    opts+='<option value="" disabled>Bu tipte portföy yok</option>';
-  } else {
-    opts+=filtered.map(p=>{
-      const durumLabel=p.durum&&p.durum!=='Aktif'?` (${p.durum})`:'';
-      const lokasyon=p.il||p.ilce?` — ${[p.il,p.ilce].filter(Boolean).join('/')}`:'' ;
-      return `<option value="${p.baslik}"${p.baslik===curVal?' selected':''}>${p.baslik}${durumLabel}${lokasyon}</option>`;
-    }).join('');
-  }
-  sel.innerHTML=opts;
+  dl.innerHTML=filtered.map(p=>{
+    const durumLabel=p.durum&&p.durum!=='Aktif'?` (${p.durum})`:'';
+    const lokasyon=p.il||p.ilce?` — ${[p.il,p.ilce].filter(Boolean).join('/')}`:'' ;
+    return `<option value="${p.baslik}">${p.baslik}${durumLabel}${lokasyon}</option>`;
+  }).join('');
 }
 
 async function saveItem(){
@@ -1335,7 +1327,7 @@ async function saveItem(){
       const islemRaw=parseFiyat(sv('f_islem'));
       if(!islemRaw){alert('İşlem tutarı zorunlu');return;}
       const portfoyVal=sv('f_portfoy');
-      if(!portfoyVal||portfoyVal===''){alert('Portföy seçimi zorunludur');return;}
+      if(!portfoyVal){alert('Portföy adı zorunludur');return;}
       const baz=Math.round(parseInt(islemRaw)*0.02);
       const ek=parseInt(parseFiyat(sv('f_ekleme'))||0);
       const is=parseInt(parseFiyat(sv('f_iskonto'))||0);
