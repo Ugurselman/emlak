@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html><!-- v2.1 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -997,7 +997,7 @@ function renderApp(){
         <button class="ni" onclick="setTab('talepler')"><i class="ti ti-clipboard-list"></i>${i18n('requests')}</button>
         <button class="ni" onclick="setTab('musteriler')"><i class="ti ti-users"></i>${i18n('customers')}</button>
         <button class="ni" onclick="setTab('komisyon')"><i class="ti ti-cash"></i>${i18n('commission')}</button>
-        ${showUsers?`<div class="nav-grp">${i18n('management')}</div><button class="ni" onclick="setTab('kullanicilar')"><i class="ti ti-user-cog"></i>${i18n('users')}</button>`:''}
+        ${showUsers?`<div class="nav-grp">${i18n('management')}</div><button class="ni" onclick="setTab('kullanicilar')"><i class="ti ti-user-cog"></i> ${i18n('users')}</button>`:''}
         ${showSirket?`<button class="ni" onclick="setTab('sirketler')"><i class="ti ti-building"></i>${i18n('companies')}</button>`:''}
         <div class="nav-grp">&nbsp;</div>
         <button class="ni ni-logout" onclick="doLogout()"><i class="ti ti-logout"></i>${i18n('logout')}</button>
