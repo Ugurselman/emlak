@@ -529,8 +529,29 @@ function openSidebar(){el('sidebar').classList.add('open');el('mob-overlay').cla
 function closeSidebar(){el('sidebar')?.classList.remove('open');el('mob-overlay')?.classList.remove('open');}
 
 // ── EXCEL EXPORT ───────────────────────────────────────
-function exportExcel(data,cols,filename){
-  const rows=data.map(row=>cols.reduce((o,c)=>{o[c.label]=row[c.key]||'';return o;},{}));
+function exportExcel(data,cols,filename,tid=null){
+  // Eğer tablo ID verilmişse sadece görünür satırları al
+  let exportData=data;
+  if(tid){
+    const tbl=el(tid);
+    if(tbl){
+      const visibleRids=new Set();
+      tbl.querySelectorAll('tbody tr[data-row]:not(.hr)').forEach(row=>{
+        // Her satırın data attribute'larından orijinal kaydı bul
+        const fiyat=row.dataset.fiyat||row.dataset.butce||row.dataset.islem||row.dataset.net;
+        visibleRids.add(row.innerHTML.substring(0,50));
+      });
+      // Görünür satır sayısına göre filtrele
+      const visibleRows=tbl.querySelectorAll('tbody tr[data-row]:not(.hr)');
+      const visibleIndices=new Set();
+      visibleRows.forEach(row=>{
+        const idx=Array.from(tbl.querySelectorAll('tbody tr[data-row]')).indexOf(row);
+        visibleIndices.add(idx);
+      });
+      exportData=data.filter((_,i)=>visibleIndices.has(i));
+    }
+  }
+  const rows=exportData.map(row=>cols.reduce((o,c)=>{o[c.label]=row[c.key]||'';return o;},{}));
   const ws=XLSX.utils.json_to_sheet(rows);
   const wb=XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb,ws,'Veri');
@@ -681,7 +702,7 @@ function excelPortfoy(){
     {key:'brut',label:'Brüt m²'},{key:'net',label:'Net m²'},{key:'alan',label:'Alan m²'},
     {key:'fiyatFmt',label:'Fiyat'},{key:'musteriAd',label:'Portföy Sahibi'},
     {key:'ilanSahibi',label:'İlan Sorumlusu'},{key:'durum',label:'Durum'},{key:'not',label:'Not'}
-  ],`${tipL}_portfoy`);
+  ],`${tipL}_portfoy`,'tbl-p');
 }
 
 function renderTalepler(c,ta){
@@ -725,7 +746,7 @@ function excelTalepler(){
     {key:'konutTip',label:'Konut Tipi'},{key:'arsaNitelik',label:'Arsa Niteliği'},
     {key:'bolge',label:'Bölge'},{key:'butce',label:'Bütçe'},{key:'detay',label:'Detay'},
     {key:'durum',label:'Durum'},{key:'tarih',label:'Tarih'},{key:'sorumlu',label:'Sorumlu'}
-  ],'talepler');
+  ],'talepler','tbl-t');
 }
 
 function renderMusteriler(c,ta){
@@ -757,7 +778,7 @@ function excelMusteriler(){
   exportExcel(musteriler.map(m=>({...m,sorumlu:getUserName(m._uid)})),[
     {key:'ad',label:'Ad'},{key:'tel',label:'Telefon'},{key:'email',label:'E-posta'},
     {key:'tip',label:'Tip'},{key:'not',label:'Not'},{key:'sorumlu',label:'Sorumlu'}
-  ],'musteriler');
+  ],'musteriler','tbl-m');
 }
 
 // ── KOMİSYON ──────────────────────────────────────────
@@ -866,7 +887,7 @@ function excelKomisyon(){
     {key:'bazKomisyon',label:'Baz Komisyon'},{key:'ekleme',label:'Ekleme'},
     {key:'iskonto',label:'İskonto'},{key:'netKomisyon',label:'Net Komisyon'},
     {key:'sorumlu',label:'Sorumlu'},{key:'not',label:'Not'}
-  ],'komisyon');
+  ],'komisyon','tbl-k');
 }
 
 function buildChart(){
@@ -889,7 +910,20 @@ function renderYT(){
 
 // ── KULLANICILAR ───────────────────────────────────────
 function renderKullanicilar(c,ta){
-  ta.innerHTML=`<button class="btn-add" onclick="openModal('davet',null)"><i class="ti ti-user-plus"></i> Kullanıcı Ekle</button>`;
+  const tid=currentProfile.tenant_id;
+  const tenant=tenants.find(t=>t.id===tid)||currentTenant;
+  const maxU=tenant?.max_users||999;
+  const curU=users.filter(u=>u.tenant_id===tid).length;
+  const limitDolu=curU>=maxU;
+  let btnHTML='';
+  if(limitDolu){
+    btnHTML=`<div style="background:#fee2e2;color:#991b1b;padding:7px 13px;border-radius:var(--rs);font-size:12px;display:flex;align-items:center;gap:6px"><i class="ti ti-alert-circle"></i> Kullanıcı limitiniz doldu. Daha fazla kullanıcı için panel yönetimiyle görüşün.</div>`;
+  } else if(maxU===1){
+    btnHTML=`<button class="btn-add" disabled style="opacity:.4;cursor:not-allowed"><i class="ti ti-user-plus"></i> Kullanıcı Ekle (1 kullanıcı limiti)</button>`;
+  } else {
+    btnHTML=`<button class="btn-add" onclick="openModal('davet',null)"><i class="ti ti-user-plus"></i> Kullanıcı Ekle (${curU}/${maxU})</button>`;
+  }
+  ta.innerHTML=btnHTML;
   const list=users.filter(u=>u.tenant_id===currentProfile.tenant_id);
   c.innerHTML=`
   <div class="tw"><table style="min-width:400px"><thead><tr>
@@ -920,22 +954,45 @@ function renderKullanicilar(c,ta){
 
 function renderSirketler(c,ta){
   ta.innerHTML=`<button class="btn-add" onclick="openModal('sirket',null)"><i class="ti ti-plus"></i> Şirket Ekle</button>`;
+  const sirketList=tenants.filter(t=>t.id!=='00000000-0000-0000-0000-000000000001');
   c.innerHTML=`
   <div class="sg" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
-    <div class="sc ac"><div class="sl"><i class="ti ti-building"></i> Toplam Şirket</div><div class="sv">${tenants.filter(t=>t.id!=='00000000-0000-0000-0000-000000000001').length}</div></div>
+    <div class="sc ac"><div class="sl"><i class="ti ti-building"></i> Toplam Şirket</div><div class="sv">${sirketList.length}</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-users"></i> Toplam Kullanıcı</div><div class="sv">${users.filter(u=>u.role!=='superadmin').length}</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-check"></i> Aktif</div><div class="sv">${tenants.filter(t=>t.is_active&&t.id!=='00000000-0000-0000-0000-000000000001').length}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-check"></i> Aktif</div><div class="sv">${sirketList.filter(t=>t.is_active).length}</div></div>
   </div>
-  ${tenants.filter(t=>t.id!=='00000000-0000-0000-0000-000000000001').map(t=>{
+  ${sirketList.map(t=>{
     const tUsers=users.filter(u=>u.tenant_id===t.id);
     const brokerUser=tUsers.find(u=>u.role==='broker');
+    const maxU=t.max_users||1;
+    const pct=Math.round((tUsers.length/maxU)*100);
     return `<div class="tenant-card">
-      <div class="tenant-info"><h3>${t.name}</h3><p>${tUsers.length} kullanıcı · Broker: ${brokerUser?.full_name||'Yok'} · ${t.is_active?'Aktif':'Pasif'}</p></div>
-      <div style="display:flex;gap:6px;align-items:center">
-        <span class="badge ${t.is_active?'b-akt':'b-kap'}">${t.is_active?'Aktif':'Pasif'}</span>
-        <button class="ab" onclick="toggleTenant('${t.id}',${t.is_active})"><i class="ti ti-${t.is_active?'pause':'play'}"></i></button>
+      <div class="tenant-info" style="flex:1">
+        <h3>${t.name}</h3>
+        <p>${brokerUser?.full_name||'Broker yok'} · <span style="color:${tUsers.length>=maxU?'#991b1b':'#166534'};font-weight:500">${tUsers.length}/${maxU} kullanıcı</span> · <span class="badge ${t.is_active?'b-akt':'b-kap'}" style="font-size:10px">${t.is_active?'Aktif':'Pasif'}</span></p>
+        <div style="margin-top:5px;height:4px;background:var(--bd);border-radius:2px;width:150px"><div style="height:4px;background:${tUsers.length>=maxU?'#991b1b':'#1a5276'};border-radius:2px;width:${Math.min(pct,100)}%"></div></div>
+      </div>
+      <div style="display:flex;gap:5px;align-items:center">
+        <button class="ab" onclick="openModal('sirket','${t.id}')" title="Düzenle"><i class="ti ti-edit"></i></button>
+        <button class="ab del" onclick="deleteTenant('${t.id}')" title="Sil"><i class="ti ti-trash"></i></button>
       </div>
     </div>`;}).join('')||`<div class="empty"><i class="ti ti-building"></i><p>Henüz şirket yok</p></div>`}`;
+}
+
+
+async function deleteTenant(id){
+  const t=tenants.find(t=>t.id===id);
+  const tUsers=users.filter(u=>u.tenant_id===id);
+  if(tUsers.length>0){
+    alert(`Bu şirkette ${tUsers.length} kullanıcı var. Silmeden önce kullanıcıları kaldırın.`);
+    return;
+  }
+  if(!confirm(`"${t?.name}" şirketini silmek istediğinizden emin misiniz?`))return;
+  const{error}=await sb.from('tenants').delete().eq('id',id);
+  if(error){alert('Silme hatası: '+error.message);return;}
+  tenants=tenants.filter(t=>t.id!==id);
+  toast('Şirket silindi');
+  render();
 }
 
 async function toggleTenant(id,isActive){
@@ -959,6 +1016,7 @@ function openModal(type,rid){
     if(type==='musteri')item=musteriler.find(m=>m._rid==rid);
     if(type==='komisyon')item=komisyonlar.find(k=>k._rid==rid);
     if(type==='rol')item=users.find(u=>u.id===rid);
+    if(type==='sirket')item=tenants.find(t=>t.id===rid);
   }
   let body='',title='';
   const ptabTip=ptab==='satilik'?'Satılık':'Kiralık';
@@ -1086,10 +1144,13 @@ function openModal(type,rid){
     body=`
     <div class="fr">
       <div class="fg"><label>Tarih (Yıl-Ay)</label><input id="f_tarih" type="month" value="${item?item.tarih||'':new Date().toISOString().slice(0,7)}"></div>
-      <div class="fg"><label>Tip</label><select id="f_tip"><option${(!item||item.tip==='Satış')?' selected':''}>Satış</option><option${(item&&item.tip==='Kiralama')?' selected':''}>Kiralama</option></select></div>
+      <div class="fg"><label>Tip</label><select id="f_tip" onchange="updatePortfoyList(this.value,'')"><option${(!item||item.tip==='Satış')?' selected':''}>Satış</option><option${(item&&item.tip==='Kiralama')?' selected':''}>Kiralama</option></select></div>
     </div>
-    <div class="fr">
-      <div class="fg"><label>Portföy</label><input id="f_portfoy" value="${item?item.portfoyAd||'':''}" placeholder="İlan adı"></div>
+    <div class="fg"><label>Portföy <span style="color:#991b1b">*</span></label>
+      <select id="f_portfoy" required>
+        <option value="">Önce tip seçin…</option>
+      </select>
+    </div>
       <div class="fg"><label>Müşteri</label><input id="f_musteri" value="${item?item.musteriAd||'':''}" placeholder="Müşteri adı"></div>
     </div>
     <div class="fdiv">Tutar</div>
@@ -1134,14 +1195,30 @@ function openModal(type,rid){
   }
 
   if(type==='sirket'){
-    title='Yeni Şirket Ekle';
+    title=item?'Şirketi Düzenle':'Yeni Şirket Ekle';
+    const sirketUserCount=item?users.filter(u=>u.tenant_id===item.id).length:0;
     body=`
-    <div class="fg"><label>Şirket / Ofis Adı</label><input id="f_sirket" placeholder="Şirket adı"></div>
+    <div class="fg"><label>Şirket / Ofis Adı</label><input id="f_sirket" value="${item?item.name||'':''}" placeholder="Şirket adı"></div>
+    <div class="fg"><label>Kullanıcı Limiti</label>
+      <select id="f_maxusers">
+        ${[1,2,3,5,10,15,20,50].map(n=>`<option value="${n}"${(item?.max_users||1)==n?' selected':''}>${n} kullanıcı</option>`).join('')}
+      </select>
+      ${item?`<div style="font-size:11px;color:var(--tx2);margin-top:3px">Şu an ${sirketUserCount} aktif kullanıcı var</div>`:''}
+    </div>
+    <div class="fg"><label>Durum</label>
+      <select id="f_aktif">
+        <option value="true"${(!item||item.is_active!==false)?' selected':''}>Aktif</option>
+        <option value="false"${(item&&item.is_active===false)?' selected':''}>Pasif</option>
+      </select>
+    </div>
+    ${!item?`
+    <div class="fdiv" style="margin-top:4px">Broker Bilgileri</div>
     <div class="fg"><label>Broker Adı</label><input id="f_ad" placeholder="Ad Soyad"></div>
     <div class="fg"><label>Broker E-posta</label><input id="f_email" type="email" placeholder="broker@sirket.com"></div>
-    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:12px;font-size:12px;color:#0369a1;margin-top:4px">
-      <i class="ti ti-send" style="font-size:14px"></i> Broker'a davet maili gönderilecek. Kendi şifresini ve bilgilerini oluşturacak.
-    </div>`;
+    <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px;font-size:12px;color:#0369a1;margin-top:4px">
+      <i class="ti ti-send"></i> Broker'a davet maili gönderilecek.
+    </div>`:''}
+    `;
   }
 
   const ov=document.createElement('div');
@@ -1150,7 +1227,11 @@ function openModal(type,rid){
   ov.innerHTML=`<div class="modal"><div class="mh"><h3>${title}</h3><button class="mx" onclick="closeModal()"><i class="ti ti-x"></i></button></div><div class="mb">${body}</div><div class="mf"><button class="bc" onclick="closeModal()">İptal</button><button class="bs" id="save-btn" onclick="saveItem()">Kaydet</button></div></div>`;
   document.body.appendChild(ov);
   if(type==='portfolio'&&item?.il)setTimeout(()=>ilceDoldur('f_il','f_ilce',item.ilce||''),10);
-  if(type==='komisyon'&&item?.islemTutari)setTimeout(kAC,10);
+  if(type==='komisyon'){
+    if(item?.islemTutari)setTimeout(kAC,10);
+    const initTip=item?item.tip:'Satış';
+    setTimeout(()=>updatePortfoyList(initTip,item?.portfoyAd||''),20);
+  }
   document.addEventListener('click',acOut);
 }
 
@@ -1178,6 +1259,24 @@ function kAC(){
 }
 
 // ── KAYDET ─────────────────────────────────────────────
+
+function updatePortfoyList(tip, curVal=''){
+  const sel=el('f_portfoy');
+  if(!sel)return;
+  // Tip'e göre portföyleri filtrele
+  let filtered=[];
+  if(tip==='Satış'){
+    filtered=portfolio.filter(p=>p.tip==='Satılık'&&p.durum==='Satıldı');
+  } else if(tip==='Kiralama'){
+    filtered=portfolio.filter(p=>p.tip==='Kiralık'&&p.durum==='Kiralandı');
+  }
+  sel.innerHTML='<option value="">Portföy seçin…</option>'+
+    filtered.map(p=>`<option value="${p.baslik}"${p.baslik===curVal?' selected':''}>${p.baslik} — ${p.il||''} ${p.ilce||''}</option>`).join('');
+  if(filtered.length===0){
+    sel.innerHTML='<option value="">Bu tipte tamamlanmış portföy yok</option>';
+  }
+}
+
 async function saveItem(){
   const btn=el('save-btn');if(btn){btn.disabled=true;btn.textContent='Kaydediliyor…';}
   try{
@@ -1224,10 +1323,14 @@ async function saveItem(){
     else if(modalType==='komisyon'){
       const islemRaw=parseFiyat(sv('f_islem'));
       if(!islemRaw){alert('İşlem tutarı zorunlu');return;}
+      const portfoyVal=sv('f_portfoy');
+      if(!portfoyVal||portfoyVal===''){alert('Portföy seçimi zorunludur');return;}
       const baz=Math.round(parseInt(islemRaw)*0.02);
       const ek=parseInt(parseFiyat(sv('f_ekleme'))||0);
       const is=parseInt(parseFiyat(sv('f_iskonto'))||0);
-      const obj={tarih:sv('f_tarih'),tip:sv('f_tip'),portfoyAd:sv('f_portfoy'),musteriAd:sv('f_musteri'),islemTutari:islemRaw,bazKomisyon:String(baz),ekleme:String(ek),iskonto:String(is),netKomisyon:String(baz+ek-is),not:sv('f_not')};
+      // Portföy adından il/ilçe bilgisini al
+      const selPortfoy=portfolio.find(p=>p.baslik===portfoyVal.split(' — ')[0]);
+      const obj={tarih:sv('f_tarih'),tip:sv('f_tip'),portfoyAd:portfoyVal.split(' — ')[0],musteriAd:sv('f_musteri'),islemTutari:islemRaw,bazKomisyon:String(baz),ekleme:String(ek),iskonto:String(is),netKomisyon:String(baz+ek-is),not:sv('f_not')};
       if(editId){
         const{error}=await sb.from('komisyonlar').update({data:obj,user_id:ownerUid}).eq('id',editId);
         if(error)throw error;
@@ -1236,6 +1339,15 @@ async function saveItem(){
     }
     else if(modalType==='davet'){
       if(!sv('f_email')){alert('E-posta zorunlu');return;}
+      // Kullanıcı limiti kontrolü
+      const tidCheck=currentProfile.tenant_id;
+      const tenantCheck=tenants.find(t=>t.id===tidCheck)||currentTenant;
+      const maxUCheck=tenantCheck?.max_users||999;
+      const curUCheck=users.filter(u=>u.tenant_id===tidCheck).length;
+      if(curUCheck>=maxUCheck){
+        alert('Kullanıcı limitiniz doldu. Daha fazla kullanıcı eklemek için panel yönetimiyle görüşün.');
+        return;
+      }
       // Daveti invitations tablosuna kaydet
       const invData={
         email:sv('f_email'),
@@ -1265,27 +1377,30 @@ async function saveItem(){
       toast('Rol güncellendi ✓');
     }
     else if(modalType==='sirket'){
-      const sName=sv('f_sirket'),adName=sv('f_ad'),email=sv('f_email');
-      if(!sName||!email){alert('Şirket adı ve e-posta zorunlu');return;}
-      const{data:ten,error:tenErr}=await sb.from('tenants').insert({name:sName}).select().single();
-      if(tenErr){alert('Şirket oluşturulamadı: '+tenErr.message);return;}
-      // Daveti kaydet
-      const{error:invErr}=await sb.from('invitations').insert({
-        email,full_name:adName,role:'broker',
-        tenant_id:ten.id,created_by:currentUser.id
-      });
-      if(invErr){alert('Davet kaydedilemedi: '+invErr.message);return;}
-      // Magic link gönder
-      const{error:magicErr}=await sb.auth.signInWithOtp({
-        email,
-        options:{
-          emailRedirectTo:window.location.origin,
-          data:{full_name:adName,invited_role:'broker',tenant_id:ten.id}
-        }
-      });
-      if(magicErr){alert('Davet maili gönderilemedi: '+magicErr.message);return;}
-      tenants.push(ten);
-      toast('Şirket oluşturuldu, Broker\'a davet maili gönderildi ✓');
+      const sName=sv('f_sirket');
+      const maxUsers=parseInt(sv('f_maxusers')||'1');
+      const isAktif=sv('f_aktif')==='true';
+      if(!sName){alert('Şirket adı zorunlu');return;}
+      if(editId){
+        // Düzenleme modu
+        const{error:updErr}=await sb.from('tenants').update({name:sName,max_users:maxUsers,is_active:isAktif}).eq('id',editId);
+        if(updErr){alert('Güncelleme hatası: '+updErr.message);return;}
+        const t=tenants.find(t=>t.id===editId);
+        if(t){t.name=sName;t.max_users=maxUsers;t.is_active=isAktif;}
+        toast('Şirket güncellendi ✓');
+      } else {
+        // Yeni şirket
+        const adName=sv('f_ad'),email=sv('f_email');
+        if(!email){alert('Broker e-postası zorunlu');return;}
+        const{data:ten,error:tenErr}=await sb.from('tenants').insert({name:sName,max_users:maxUsers,is_active:isAktif}).select().single();
+        if(tenErr){alert('Şirket oluşturulamadı: '+tenErr.message);return;}
+        const{error:invErr}=await sb.from('invitations').insert({email,full_name:adName,role:'broker',tenant_id:ten.id,created_by:currentUser.id});
+        if(invErr){alert('Davet kaydedilemedi: '+invErr.message);return;}
+        const{error:magicErr}=await sb.auth.signInWithOtp({email,options:{emailRedirectTo:window.location.origin,data:{full_name:adName,invited_role:'broker',tenant_id:ten.id}}});
+        if(magicErr){alert('Davet maili gönderilemedi: '+magicErr.message);return;}
+        tenants.push({...ten,max_users:maxUsers});
+        toast('Şirket oluşturuldu, Broker\'a davet maili gönderildi ✓');
+      }
     }
     closeModal();syncBar('☁ Kaydedildi');render();
   }catch(e){syncBar('⚠ Hata: '+e.message,true);alert('Hata: '+e.message);}
