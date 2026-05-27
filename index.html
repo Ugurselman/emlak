@@ -335,6 +335,26 @@ const LANGS = {
     companyDeleted: 'Şirket silindi',
     prevRecord: '(önceki kayıt)', users: 'kullanıcı',
     filterPlaceholder: 'Filtrele…', selectOrType: 'Yaz veya seç…',
+    // Tablo başlıkları
+    colListing: 'İLAN', colCategory: 'KATEGORİ', colSubType: 'ALT TİP',
+    colProvince: 'İL', colDistrict: 'İLÇE', colArea: 'ALAN', colPrice: 'FİYAT',
+    colOwner: 'P. SAHİBİ', colAgent: 'İLAN SORUMLUSU', colStatus: 'DURUM',
+    colDate: 'TARİH', colType: 'TİP', colBudget: 'BÜTÇE', colDetail: 'DETAY',
+    colCustomer: 'MÜŞTERİ', colPhone: 'TELEFON', colEmail: 'E-POSTA',
+    colNote: 'NOT', colRole: 'ROL', colTrans: 'İŞLEM', colBase: 'BAZ KOM.',
+    colAdd: 'EKLEME', colDiscount: 'İSKONTO', colNet: 'NET', colResp: 'SORUMLU',
+    colPortfolio: 'PORTFÖY',
+    // Durum değerleri
+    statusActive: 'Aktif', statusSold: 'Satıldı', statusSoldByOther: 'Başkası Sattı',
+    statusWithdrawnSale: 'Satmaktan Vazgeçti', statusRented: 'Kiralandı',
+    statusRentedByOther: 'Başkası Kiraladı', statusWithdrawnRent: 'Kiralamaktan Vazgeçti',
+    statusWaiting: 'Beklemede', statusClosed: 'Kapandı', statusUrgent: 'Acil',
+    // Filtreler
+    allFilter: 'Tümü', myListingsBtn: 'Benim İlanlarım',
+    noData: 'Veri yok', noListingsFound: 'İlan bulunamadı',
+    noRequestsFound: 'Talep bulunamadı', noCustomersFound: 'Müşteri bulunamadı',
+    noTransactionsFound: 'İşlem yok',
+    filtersActive: 'filtre aktif',
   },
   en: {
     appName: 'Real Estate Office', appDesc: 'Professional Real Estate Management System',
@@ -455,6 +475,23 @@ const LANGS = {
     companyDeleted: 'Company deleted',
     prevRecord: '(previous record)', users: 'users',
     filterPlaceholder: 'Filter…', selectOrType: 'Type or select…',
+    colListing: 'LISTING', colCategory: 'CATEGORY', colSubType: 'SUB TYPE',
+    colProvince: 'PROVINCE', colDistrict: 'DISTRICT', colArea: 'AREA', colPrice: 'PRICE',
+    colOwner: 'OWNER', colAgent: 'AGENT', colStatus: 'STATUS',
+    colDate: 'DATE', colType: 'TYPE', colBudget: 'BUDGET', colDetail: 'DETAIL',
+    colCustomer: 'CUSTOMER', colPhone: 'PHONE', colEmail: 'EMAIL',
+    colNote: 'NOTE', colRole: 'ROLE', colTrans: 'TRANSACTION', colBase: 'BASE COM.',
+    colAdd: 'ADDITION', colDiscount: 'DISCOUNT', colNet: 'NET', colResp: 'AGENT',
+    colPortfolio: 'PORTFOLIO',
+    statusActive: 'Active', statusSold: 'Sold', statusSoldByOther: 'Sold by Other',
+    statusWithdrawnSale: 'Withdrawn', statusRented: 'Rented',
+    statusRentedByOther: 'Rented by Other', statusWithdrawnRent: 'Withdrawn',
+    statusWaiting: 'Pending', statusClosed: 'Closed', statusUrgent: 'Urgent',
+    allFilter: 'All', myListingsBtn: 'My Listings',
+    noData: 'No data', noListingsFound: 'No listings found',
+    noRequestsFound: 'No requests found', noCustomersFound: 'No customers found',
+    noTransactionsFound: 'No transactions',
+    filtersActive: 'filters active',
   },
   ru: {
     appName: 'Агентство Недвижимости', appDesc: 'Профессиональная Система Управления',
@@ -575,6 +612,23 @@ const LANGS = {
     companyDeleted: 'Компания удалена',
     prevRecord: '(предыдущая запись)', users: 'пользователей',
     filterPlaceholder: 'Фильтр…', selectOrType: 'Введите или выберите…',
+    colListing: 'ОБЪЕКТ', colCategory: 'КАТЕГОРИЯ', colSubType: 'ТИП',
+    colProvince: 'ОБЛАСТЬ', colDistrict: 'РАЙОН', colArea: 'ПЛОЩАДЬ', colPrice: 'ЦЕНА',
+    colOwner: 'ВЛАДЕЛЕЦ', colAgent: 'АГЕНТ', colStatus: 'СТАТУС',
+    colDate: 'ДАТА', colType: 'ТИП', colBudget: 'БЮДЖЕТ', colDetail: 'ДЕТАЛИ',
+    colCustomer: 'КЛИЕНТ', colPhone: 'ТЕЛЕФОН', colEmail: 'ЭМЕЙЛ',
+    colNote: 'ЗАМЕТКА', colRole: 'РОЛЬ', colTrans: 'СДЕЛКА', colBase: 'БАЗА',
+    colAdd: 'ДОПЛАТА', colDiscount: 'СКИДКА', colNet: 'ЧИСТАЯ', colResp: 'АГЕНТ',
+    colPortfolio: 'ОБЪЕКТ',
+    statusActive: 'Активно', statusSold: 'Продано', statusSoldByOther: 'Продано другим',
+    statusWithdrawnSale: 'Снято', statusRented: 'Сдано',
+    statusRentedByOther: 'Сдано другим', statusWithdrawnRent: 'Снято',
+    statusWaiting: 'Ожидание', statusClosed: 'Закрыто', statusUrgent: 'Срочно',
+    allFilter: 'Все', myListingsBtn: 'Мои объекты',
+    noData: 'Нет данных', noListingsFound: 'Объекты не найдены',
+    noRequestsFound: 'Запросы не найдены', noCustomersFound: 'Клиенты не найдены',
+    noTransactionsFound: 'Нет сделок',
+    filtersActive: 'фильтров активно',
   }
 };
 
@@ -972,7 +1026,7 @@ function initF(tid){tableFilters[tid]=tableFilters[tid]||{};}
 function toggleFI(tid,col){const w=el(`fi-${tid}-${col}`);if(!w)return;const v=w.style.display==='block';w.style.display=v?'none':'block';el(`fb-${tid}-${col}`)?.classList.toggle('on',!v);if(!v){fillDatalist(tid,col);const i=w.querySelector('input');if(i)i.focus();}}
 function applyF(tid,col,val){initF(tid);tableFilters[tid][col]=val.toLowerCase().trim();el(`fb-${tid}-${col}`)?.classList.toggle('on',val.length>0);filterTbl(tid);updFC(tid);}
 function filterTbl(tid){const tbl=el(tid);if(!tbl)return;const f=tableFilters[tid]||{};tbl.querySelectorAll('tbody tr[data-row]').forEach(row=>{let show=true;for(const[col,val] of Object.entries(f)){if(!val)continue;const attrVal=(row.getAttribute('data-'+col.toLowerCase())||row.getAttribute('data-'+col)||'').toLowerCase();if(!attrVal.includes(val)){show=false;break;}}row.classList.toggle('hr',!show);});}
-function updFC(tid){const f=tableFilters[tid]||{};const count=Object.values(f).filter(v=>v).length;const badge=el(`fc-${tid}`);if(badge){badge.style.display=count>0?'flex':'none';badge.querySelector('.filter-badge').textContent=count+' filtre aktif';}}
+function updFC(tid){const f=tableFilters[tid]||{};const count=Object.values(f).filter(v=>v).length;const badge=el(`fc-${tid}`);if(badge){badge.style.display=count>0?'flex':'none';badge.querySelector('.filter-badge').textContent=count+' '+i18n('filtersActive');}}
 function clearF(tid){tableFilters[tid]={};const tbl=el(tid);if(!tbl)return;tbl.querySelectorAll('.th-finput input').forEach(i=>i.value='');tbl.querySelectorAll('.th-fi').forEach(b=>b.classList.remove('on'));tbl.querySelectorAll('.th-finput').forEach(w=>w.style.display='none');tbl.querySelectorAll('tbody tr[data-row]').forEach(r=>r.classList.remove('hr'));updFC(tid);}
 function getColVals(tid,col){
   const tbl=el(tid);if(!tbl)return[];
@@ -1066,15 +1120,15 @@ function renderPortfoy(c,ta){
   const tid='tbl-p';initF(tid);
   c.innerHTML=`
   <div class="sub-bar"><div class="sub-left">
-    <div style="display:flex;gap:5px">${['Tümü',i18n('residential'),i18n('land')].map(f=>`<button class="sfbtn${subF===f?' active':''}" onclick="setSF('${f}')">${f}</button>`).join('')}</div>
-    <button class="sfbtn sfbtn-me${showOnlyMine?' active':''}" onclick="toggleMine()"><i class="ti ti-user" style="font-size:11px"></i> Benim İlanlarım</button>
+    <div style="display:flex;gap:5px">${[i18n('allFilter'),i18n('residential'),i18n('land')].map(f=>`<button class="sfbtn${subF===f?' active':''}" onclick="setSF('${f}')">${f}</button>`).join('')}</div>
+    <button class="sfbtn sfbtn-me${showOnlyMine?' active':''}" onclick="toggleMine()"><i class="ti ti-user" style="font-size:11px"></i>${i18n('myListingsBtn')}</button>
     ${fBar(tid)}
-  </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ilan</span></div>
+  </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ${i18n('listing')}</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'baslik','İlan')}${mTH(tid,'kategori','Kategori','80px')}${mTH(tid,'altTip','Alt Tip','90px')}${mTH(tid,'il','İl','70px')}${mTH(tid,'ilce','İlçe','90px')}${mTH(tid,'alan','Alan','80px')}${mTH(tid,'fiyat','Fiyat')}${mTH(tid,'portfoySahibi','P. Sahibi')}${mTH(tid,'ilanSahibi','İlan Sorumlusu')}${mTH(tid,'durum','Durum','100px')}
+    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea'),'80px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'portfoySahibi',i18n('colOwner'))}${mTH(tid,'ilanSahibi','İlan Sorumlusu')}${mTH(tid,'durum','Durum','100px')}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
-  ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>İlan bulunamadı</p></div></td></tr>`:''}
+  ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListingsFound')}</p></div></td></tr>`:''}
   ${fil.map(p=>{
     const isA=p.kategori===i18n('land');
     const altTip=isA?(p.nitelik||i18n('land')):(p.konutTip||'');
@@ -1127,10 +1181,10 @@ function renderTalepler(c,ta){
   c.innerHTML=`
   <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${['Tümü','Almak','Kiralamak',i18n('residential'),i18n('land'),'Acil'].map(f=>`<button class="sfbtn${tF===f?' active':''}" onclick="setTF('${f}')">${f}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'musteri','Müşteri')}${mTH(tid,'tip','Talep','80px')}${mTH(tid,'kategori','Kategori','80px')}${mTH(tid,'altTip','Alt Tip','100px')}${mTH(tid,'bolge','Bölge')}${mTH(tid,'butce','Bütçe')}${mTH(tid,'durum','Durum','85px')}${mTH(tid,'tarih','Tarih','90px')}${mTH(tid,'sorumlu','Sorumlu')}
+    ${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'tip','Talep','80px')}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip','Alt Tip','100px')}${mTH(tid,'bolge',i18n('region'))}${mTH(tid,'butce',i18n('colBudget'))}${mTH(tid,'durum','Durum','85px')}${mTH(tid,'tarih','Tarih','90px')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
-  ${fil.length===0?`<tr><td colspan="10"><div class="empty"><i class="ti ti-inbox"></i><p>Talep yok</p></div></td></tr>`:''}
+  ${fil.length===0?`<tr><td colspan="10"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noRequestsFound')}</p></div></td></tr>`:''}
   ${fil.map(t=>{
     const altTip=t.kategori===i18n('residential')?(t.konutTip||''):(t.arsaNitelik||'');
     const sorumlu=getUserName(t._uid);
@@ -1164,8 +1218,8 @@ function renderMusteriler(c,ta){
   const tid='tbl-m';initF(tid);
   c.innerHTML=`
   <div class="sub-bar"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${musteriler.length} müşteri</span></div>
-  <div class="tw"><table id="${tid}"><thead><tr>${mTH(tid,'ad','Ad / Unvan')}${mTH(tid,'tel','Telefon','120px')}${mTH(tid,'email','E-posta')}${mTH(tid,'tip','Tip','100px')}${mTH(tid,'not','Not')}${mTH(tid,'sorumlu','Sorumlu')}<th><div class="th-inner"><span class="th-label"></span></div></th></tr></thead><tbody>
-  ${musteriler.length===0?`<tr><td colspan="7"><div class="empty"><i class="ti ti-users"></i><p>Müşteri yok</p></div></td></tr>`:''}
+  <div class="tw"><table id="${tid}"><thead><tr>${mTH(tid,'ad',i18n('colCustomer'))}${mTH(tid,'tel','Telefon','120px')}${mTH(tid,'email',i18n('colEmail'))}${mTH(tid,'tip','Tip','100px')}${mTH(tid,'not',i18n('colNote'))}${mTH(tid,'sorumlu',i18n('colResp'))}<th><div class="th-inner"><span class="th-label"></span></div></th></tr></thead><tbody>
+  ${musteriler.length===0?`<tr><td colspan="7"><div class="empty"><i class="ti ti-users"></i><p>${i18n('noCustomersFound')}</p></div></td></tr>`:''}
   ${musteriler.map(m=>{
     const ini=m.ad.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
     const sorumlu=getUserName(m._uid);
@@ -1251,7 +1305,7 @@ function renderKomisyon(c,ta){
     <div class="sc"><div class="sl"><i class="ti ti-minus"></i> Toplam İskonto</div><div class="sv" style="color:#991b1b">${para(s.topIs)}</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-calculator"></i> Net Fark</div><div class="sv" style="color:${s.topEk-s.topIs>=0?'#166534':'#991b1b'}">${para(s.topEk-s.topIs)}</div></div>
   </div>
-  <div class="grow-row">${gCard('Aylık Büyüme',s.mGrow)}${gCard('Quarter Büyüme',s.qGrow)}${gCard('Yıllık Büyüme',s.yGrow)}</div>
+  <div class="grow-row">${gCard(i18n('monthlyGrowth'),s.mGrow)}${gCard('Quarter Büyüme',s.qGrow)}${gCard(i18n('yearlyGrowth'),s.yGrow)}</div>
   <div class="chart-wrap"><div class="chart-title">Aylık Net Komisyon (Son 12 Ay)</div><div class="chart-canvas"><canvas id="komChart"></canvas></div></div>
   ${userSummaryHTML}
   <button class="coll-btn" id="cb" onclick="toggleColl()"><i class="ti ti-table"></i> Aylık Özet Tablo <span class="carr"><i class="ti ti-chevron-down"></i></span></button>
@@ -1266,10 +1320,10 @@ function renderKomisyon(c,ta){
   </div>
   <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} işlem</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'tarih','Tarih','80px')}${mTH(tid,'tip','Tip','75px')}${mTH(tid,'portfoy','Portföy')}${mTH(tid,'musteri','Müşteri')}${mTH(tid,'islem','İşlem Tut.')}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme','Ekleme')}${mTH(tid,'iskonto','İskonto')}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu','Sorumlu')}
+    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip','Tip','75px')}${mTH(tid,'portfoy','Portföy')}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem','İşlem Tut.')}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
-  ${komisyonlar.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-cash"></i><p>İşlem yok</p></div></td></tr>`:''}
+  ${komisyonlar.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-cash"></i><p>${i18n('noTransactionsFound')}</p></div></td></tr>`:''}
   ${komisyonlar.map(k=>{
     const sorumlu=getUserName(k._uid);
     const editable=canEdit(k);
@@ -1385,7 +1439,7 @@ function renderSirketler(c,ta){
         <button class="ab" onclick="openModal('sirket','${t.id}')" title="Düzenle"><i class="ti ti-edit"></i></button>
         <button class="ab del" onclick="deleteTenant('${t.id}')" title="Sil"><i class="ti ti-trash"></i></button>
       </div>
-    </div>`;}).join('')||`<div class="empty"><i class="ti ti-building"></i><p>Henüz şirket yok</p></div>`}`;
+    </div>`;}).join('')||`<div class="empty"><i class="ti ti-building"></i><p>${i18n('noCompanies')}</p></div>`}`;
 }
 
 
