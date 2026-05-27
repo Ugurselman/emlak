@@ -579,7 +579,7 @@ const LANGS = {
 };
 
 let currentLang = localStorage.getItem('emlak_lang') || 'tr';
-function t(key, ...args) {
+function i18n(key, ...args) {
   const val = LANGS[currentLang]?.[key] || LANGS['tr']?.[key] || key;
   if(typeof val === 'function') return val(...args);
   return val;
@@ -719,19 +719,19 @@ function renderAuth(mode='login',errMsg=''){
     </div>`:''}
     ${errMsg?`<div class="auth-err">${errMsg}</div>`:''}
     ${mode==='login'?`<div class="auth-form">
-      <div class="auth-fg"><label>${t('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com" autocomplete="email"></div>
-      <div class="auth-fg"><label>${t('password')}</label><input id="a_pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
+      <div class="auth-fg"><label>${i18n('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com" autocomplete="email"></div>
+      <div class="auth-fg"><label>${i18n('password')}</label><input id="a_pass" type="password" placeholder="••••••••" autocomplete="current-password"></div>
       <button class="auth-btn" id="asub" onclick="doLogin()">Giriş Yap</button>
       <div class="auth-link"><button onclick="renderForgot()">Şifremi unuttum</button></div>
     </div>`:mode==='register'?`<div class="auth-form">
-      <div class="auth-fg"><label>${t('fullName')}</label><input id="a_name" type="text" placeholder="Ad Soyad"></div>
-      <div class="auth-fg"><label>${t('companyName')}</label><input id="a_company" type="text" placeholder="Şirket adınız"></div>
-      <div class="auth-fg"><label>${t('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com"></div>
-      <div class="auth-fg"><label>${t('password')}</label><input id="a_pass" type="password" placeholder="En az 6 karakter"></div>
+      <div class="auth-fg"><label>${i18n('fullName')}</label><input id="a_name" type="text" placeholder="Ad Soyad"></div>
+      <div class="auth-fg"><label>${i18n('companyName')}</label><input id="a_company" type="text" placeholder="Şirket adınız"></div>
+      <div class="auth-fg"><label>${i18n('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com"></div>
+      <div class="auth-fg"><label>${i18n('password')}</label><input id="a_pass" type="password" placeholder="En az 6 karakter"></div>
       <button class="auth-btn" id="asub" onclick="doRegister()">Hesap Oluştur</button>
       <div class="auth-link">Hesabınız var mı? <button onclick="renderAuth('login')">Giriş yapın</button></div>
     </div>`:`<div class="auth-form">
-      <div class="auth-fg"><label>${t('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com"></div>
+      <div class="auth-fg"><label>${i18n('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com"></div>
       <button class="auth-btn" onclick="doForgot()">Sıfırlama Maili Gönder</button>
       <div class="auth-link"><button onclick="renderAuth('login')">← Geri dön</button></div>
     </div>`}
@@ -745,19 +745,19 @@ function renderForgot(){
   el('app').innerHTML=`<div class="auth-wrap"><div class="auth-box">
     <div class="auth-logo"><div class="ico"><i class="ti ti-building-estate"></i></div><h1>Şifre Sıfırla</h1></div>
     <div class="auth-form">
-      <div class="auth-fg"><label>${t('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com"></div>
+      <div class="auth-fg"><label>${i18n('email')}</label><input id="a_email" type="email" placeholder="ornek@mail.com"></div>
       <button class="auth-btn" onclick="doForgot()">Sıfırlama Maili Gönder</button>
       <div class="auth-link"><button onclick="renderAuth('login')">← Geri dön</button></div>
     </div>
   </div></div>`;
 }
 async function doLogin(){
-  const btn=el('asub');if(btn){btn.disabled=true;btn.textContent=t('loggingIn');}
+  const btn=el('asub');if(btn){btn.disabled=true;btn.textContent=i18n('loggingIn');}
   const{error}=await sb.auth.signInWithPassword({email:sv('a_email'),password:sv('a_pass')});
   if(error)renderAuth('login',error.message==='Invalid login credentials'?'E-posta veya şifre hatalı':error.message);
 }
 async function doRegister(){
-  const btn=el('asub');if(btn){btn.disabled=true;btn.textContent=t('registering');}
+  const btn=el('asub');if(btn){btn.disabled=true;btn.textContent=i18n('registering');}
   const name=sv('a_name'),company=sv('a_company'),email=sv('a_email'),pass=sv('a_pass');
   if(!name||!company||!email||!pass){renderAuth('register','Tüm alanları doldurun');return;}
   if(pass.length<6){renderAuth('register','Şifre en az 6 karakter');return;}
@@ -785,23 +785,23 @@ function renderInviteRegister(){
   <div class="auth-wrap"><div class="auth-box">
     <div class="auth-logo">
       <div class="ico"><i class="ti ti-building-estate"></i></div>
-      <h1>${t('welcomeInvite')}</h1>
-      <p>${t('inviteDesc')}</p>
+      <h1>${i18n('welcomeInvite')}</h1>
+      <p>${i18n('inviteDesc')}</p>
     </div>
     <div class="auth-form" id="invite-form">
-      <div class="auth-fg"><label>${t('fullName')}</label><input id="i_name" type="text" placeholder="${t('fullName')}" autocomplete="name"></div>
-      <div class="auth-fg"><label>${t('phone')}</label><input id="i_tel" type="tel" placeholder="${t('phonePlaceholder')}" autocomplete="tel"></div>
-      <div class="auth-fg"><label>${t('newPassword')}</label><input id="i_pass" type="password" placeholder="${t('passwordMin')}" autocomplete="new-password"></div>
-      <div class="auth-fg"><label>${t('confirmPassword')}</label><input id="i_pass2" type="password" placeholder="${t('confirmPassword')}" autocomplete="new-password"></div>
+      <div class="auth-fg"><label>${i18n('fullName')}</label><input id="i_name" type="text" placeholder="${i18n('fullName')}" autocomplete="name"></div>
+      <div class="auth-fg"><label>${i18n('phone')}</label><input id="i_tel" type="tel" placeholder="${i18n('phonePlaceholder')}" autocomplete="tel"></div>
+      <div class="auth-fg"><label>${i18n('newPassword')}</label><input id="i_pass" type="password" placeholder="${i18n('passwordMin')}" autocomplete="new-password"></div>
+      <div class="auth-fg"><label>${i18n('confirmPassword')}</label><input id="i_pass2" type="password" placeholder="${i18n('confirmPassword')}" autocomplete="new-password"></div>
       <div id="i_err"></div>
-      <button class="auth-btn" id="i_btn" onclick="doInviteRegister()">${t('createAccount')}</button>
+      <button class="auth-btn" id="i_btn" onclick="doInviteRegister()">${i18n('createAccount')}</button>
     </div>
   </div></div>`;
   setTimeout(()=>{const i=el('i_name');if(i)i.focus();},50);
 }
 
 async function doInviteRegister(){
-  const btn=el('i_btn');btn.disabled=true;btn.textContent=t('registering');
+  const btn=el('i_btn');btn.disabled=true;btn.textContent=i18n('registering');
   const name=el('i_name').value.trim();
   const tel=el('i_tel').value.trim();
   const pass=el('i_pass').value;
@@ -859,10 +859,10 @@ function renderPasswordReset(){
 async function doResetPassword(){
   const btn=el('r_btn');btn.disabled=true;btn.textContent='Güncelleniyor…';
   const pass=el('r_pass').value;const pass2=el('r_pass2').value;
-  if(pass.length<6){el('r_err').innerHTML='<div class="auth-err">Şifre en az 6 karakter olmalı</div>';btn.disabled=false;btn.textContent=t('updatePassword');return;}
-  if(pass!==pass2){el('r_err').innerHTML='<div class="auth-err">Şifreler eşleşmiyor</div>';btn.disabled=false;btn.textContent=t('updatePassword');return;}
+  if(pass.length<6){el('r_err').innerHTML='<div class="auth-err">Şifre en az 6 karakter olmalı</div>';btn.disabled=false;btn.textContent=i18n('updatePassword');return;}
+  if(pass!==pass2){el('r_err').innerHTML='<div class="auth-err">Şifreler eşleşmiyor</div>';btn.disabled=false;btn.textContent=i18n('updatePassword');return;}
   const{error}=await sb.auth.updateUser({password:pass});
-  if(error){el('r_err').innerHTML=`<div class="auth-err">${error.message}</div>`;btn.disabled=false;btn.textContent=t('updatePassword');}
+  if(error){el('r_err').innerHTML=`<div class="auth-err">${error.message}</div>`;btn.disabled=false;btn.textContent=i18n('updatePassword');}
   else{toast('Şifreniz güncellendi ✓');renderAuth('login');}
 }
 
@@ -892,19 +892,19 @@ function renderApp(){
         <div><div class="unm">${currentProfile.full_name||currentUser.email}</div><div class="urole">${rolLabel(r)}</div></div>
       </div>
       <nav class="sb-nav">
-        <div class="nav-grp">${t('general')}</div>
-        <button class="ni active" onclick="setTab('dashboard')"><i class="ti ti-layout-dashboard"></i>${t('dashboard')}</button>
-        <div class="nav-grp">${t('portfolio')}</div>
-        <button class="ni" onclick="setTab('satilik')"><i class="ti ti-tag"></i>${t('forSale')}</button>
-        <button class="ni" onclick="setTab('kiralik')"><i class="ti ti-key"></i>${t('forRent')}</button>
-        <div class="nav-grp">${t('tracking')}</div>
-        <button class="ni" onclick="setTab('talepler')"><i class="ti ti-clipboard-list"></i>${t('requests')}</button>
-        <button class="ni" onclick="setTab('musteriler')"><i class="ti ti-users"></i>${t('customers')}</button>
-        <button class="ni" onclick="setTab('komisyon')"><i class="ti ti-cash"></i>${t('commission')}</button>
-        ${showUsers?`<div class="nav-grp">${t('management')}</div><button class="ni" onclick="setTab('kullanicilar')"><i class="ti ti-user-cog"></i>${t('users')}</button>`:''}
-        ${showSirket?`<button class="ni" onclick="setTab('sirketler')"><i class="ti ti-building"></i>${t('companies')}</button>`:''}
+        <div class="nav-grp">${i18n('general')}</div>
+        <button class="ni active" onclick="setTab('dashboard')"><i class="ti ti-layout-dashboard"></i>${i18n('dashboard')}</button>
+        <div class="nav-grp">${i18n('portfolio')}</div>
+        <button class="ni" onclick="setTab('satilik')"><i class="ti ti-tag"></i>${i18n('forSale')}</button>
+        <button class="ni" onclick="setTab('kiralik')"><i class="ti ti-key"></i>${i18n('forRent')}</button>
+        <div class="nav-grp">${i18n('tracking')}</div>
+        <button class="ni" onclick="setTab('talepler')"><i class="ti ti-clipboard-list"></i>${i18n('requests')}</button>
+        <button class="ni" onclick="setTab('musteriler')"><i class="ti ti-users"></i>${i18n('customers')}</button>
+        <button class="ni" onclick="setTab('komisyon')"><i class="ti ti-cash"></i>${i18n('commission')}</button>
+        ${showUsers?`<div class="nav-grp">${i18n('management')}</div><button class="ni" onclick="setTab('kullanicilar')"><i class="ti ti-user-cog"></i>${i18n('users')}</button>`:''}
+        ${showSirket?`<button class="ni" onclick="setTab('sirketler')"><i class="ti ti-building"></i>${i18n('companies')}</button>`:''}
         <div class="nav-grp">&nbsp;</div>
-        <button class="ni ni-logout" onclick="doLogout()"><i class="ti ti-logout"></i>${t('logout')}</button>
+        <button class="ni ni-logout" onclick="doLogout()"><i class="ti ti-logout"></i>${i18n('logout')}</button>
       </nav>
       <div class="sb-foot" style="display:flex;align-items:center;justify-content:space-between">
         <span>☁ ${currentTenant?.name||''}</span>
@@ -925,8 +925,8 @@ function renderApp(){
         <div id="ta" style="display:flex;gap:8px;align-items:center"></div>
       </div>
       <div class="main-tabs" id="mtabs" style="display:none">
-        <button class="mt active" id="tab-sat" onclick="setPTab('satilik')"><i class="ti ti-tag"></i>${t('forSale')}</button>
-        <button class="mt" id="tab-kir" onclick="setPTab('kiralik')"><i class="ti ti-key"></i>${t('forRent')}</button>
+        <button class="mt active" id="tab-sat" onclick="setPTab('satilik')"><i class="ti ti-tag"></i>${i18n('forSale')}</button>
+        <button class="mt" id="tab-kir" onclick="setPTab('kiralik')"><i class="ti ti-key"></i>${i18n('forRent')}</button>
       </div>
       <div class="content" id="content"></div>
     </div>
@@ -1001,7 +1001,7 @@ function fillDatalist(tid,col){
   const vals=getColVals(tid,col);
   dl.innerHTML=vals.map(v=>`<option value="${v}">`).join('');
 }
-function fBar(tid){return `<div class="filter-info" id="fc-${tid}" style="display:none"><span class="filter-badge"></span><button class="filter-clear" onclick="clearF('${tid}')">${t('clearFilter')}</button></div>`;}
+function fBar(tid){return `<div class="filter-info" id="fc-${tid}" style="display:none"><span class="filter-badge"></span><button class="filter-clear" onclick="clearF('${tid}')">${i18n('clearFilter')}</button></div>`;}
 
 // ── NAVİGASYON ─────────────────────────────────────────
 function setTab(t){
@@ -1010,7 +1010,7 @@ function setTab(t){
   const isP=(t==='satilik'||t==='kiralik');
   if(el('mtabs'))el('mtabs').style.display=isP?'flex':'none';
   if(isP){ptab=t;el('tab-sat')?.classList.toggle('active',t==='satilik');el('tab-kir')?.classList.toggle('active',t==='kiralik');}
-  const meta={dashboard:[t('summary'),t('generalOverview')],satilik:[t('forSale'),''],kiralik:[t('forRent'),''],talepler:[t('requests'),''],musteriler:[t('customers'),''],komisyon:[t('commission'),''],kullanicilar:[t('users'),''],sirketler:[t('companies'),'']};
+  const meta={dashboard:[i18n('summary'),i18n('generalOverview')],satilik:[i18n('forSale'),''],kiralik:[i18n('forRent'),''],talepler:[i18n('requests'),''],musteriler:[i18n('customers'),''],komisyon:[i18n('commission'),''],kullanicilar:[i18n('users'),''],sirketler:[i18n('companies'),'']};
   if(el('tt'))el('tt').textContent=meta[t]?.[0]||t;
   if(el('ts'))el('ts').textContent=meta[t]?.[1]||'';
   render();
@@ -1041,8 +1041,8 @@ function renderDash(c){
   c.innerHTML=`
   <div class="sg">
     <div class="sc ac"><div class="sl"><i class="ti ti-home"></i> Portföy</div><div class="sv">${portfolio.length}</div><div class="ss">${aktif} aktif</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-tag"></i>${t('forSale')}</div><div class="sv">${sat.length}</div><div class="ss">${sat.filter(p=>p.kategori===t('residential')).length} konut · ${sat.filter(p=>p.kategori===t('land')).length} arsa</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-key"></i>${t('forRent')}</div><div class="sv">${kir.length}</div><div class="ss">${kir.filter(p=>p.kategori===t('residential')).length} konut · ${kir.filter(p=>p.kategori===t('land')).length} arsa</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-tag"></i>${i18n('forSale')}</div><div class="sv">${sat.length}</div><div class="ss">${sat.filter(p=>p.kategori===i18n('residential')).length} konut · ${sat.filter(p=>p.kategori===i18n('land')).length} arsa</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-key"></i>${i18n('forRent')}</div><div class="sv">${kir.length}</div><div class="ss">${kir.filter(p=>p.kategori===i18n('residential')).length} konut · ${kir.filter(p=>p.kategori===i18n('land')).length} arsa</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-cash"></i> Top. Komisyon</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' acil talep':talepler.filter(t=>t.durum!=='Kapandı').length+' açık talep'}</div></div>
   </div>
   <div class="dg">
@@ -1057,16 +1057,16 @@ function renderDash(c){
 
 function renderPortfoy(c,ta){
   const tipL=ptab==='satilik'?'Satılık':'Kiralık';
-  ta.innerHTML=`<button class="btn-add" onclick="openModal('portfolio',null)"><i class="ti ti-plus"></i> ${t('addListing')}</button>
-  ${canExcel()?`<button class="btn-excel" onclick="excelPortfoy()"><i class="ti ti-file-spreadsheet"></i> ${t('excel')}</button>`:''}`;
+  ta.innerHTML=`<button class="btn-add" onclick="openModal('portfolio',null)"><i class="ti ti-plus"></i> ${i18n('addListing')}</button>
+  ${canExcel()?`<button class="btn-excel" onclick="excelPortfoy()"><i class="ti ti-file-spreadsheet"></i> ${i18n('excel')}</button>`:''}`;
   let fil=portfolio.filter(p=>p.tip===tipL);
-  if(subF===t('residential'))fil=fil.filter(p=>p.kategori===t('residential'));
-  if(subF===t('land'))fil=fil.filter(p=>p.kategori===t('land'));
+  if(subF===i18n('residential'))fil=fil.filter(p=>p.kategori===i18n('residential'));
+  if(subF===i18n('land'))fil=fil.filter(p=>p.kategori===i18n('land'));
   if(showOnlyMine)fil=fil.filter(p=>p._uid===currentUser.id);
   const tid='tbl-p';initF(tid);
   c.innerHTML=`
   <div class="sub-bar"><div class="sub-left">
-    <div style="display:flex;gap:5px">${['Tümü',t('residential'),t('land')].map(f=>`<button class="sfbtn${subF===f?' active':''}" onclick="setSF('${f}')">${f}</button>`).join('')}</div>
+    <div style="display:flex;gap:5px">${['Tümü',i18n('residential'),i18n('land')].map(f=>`<button class="sfbtn${subF===f?' active':''}" onclick="setSF('${f}')">${f}</button>`).join('')}</div>
     <button class="sfbtn sfbtn-me${showOnlyMine?' active':''}" onclick="toggleMine()"><i class="ti ti-user" style="font-size:11px"></i> Benim İlanlarım</button>
     ${fBar(tid)}
   </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ilan</span></div>
@@ -1076,8 +1076,8 @@ function renderPortfoy(c,ta){
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>İlan bulunamadı</p></div></td></tr>`:''}
   ${fil.map(p=>{
-    const isA=p.kategori===t('land');
-    const altTip=isA?(p.nitelik||t('land')):(p.konutTip||'');
+    const isA=p.kategori===i18n('land');
+    const altTip=isA?(p.nitelik||i18n('land')):(p.konutTip||'');
     const alanStr=isA?(p.alan&&p.alan!='0'?p.alan+' m²':'-'):(p.brut&&p.brut!='0'?`B:${p.brut} N:${p.net||'-'}`:'-');
     const ilanSahibi=getUserName(p._uid);
     const editable=canEdit(p);
@@ -1115,24 +1115,24 @@ function excelPortfoy(){
 }
 
 function renderTalepler(c,ta){
-  ta.innerHTML=`<button class="btn-add" onclick="openModal('talep',null)"><i class="ti ti-plus"></i> ${t('addRequest')}</button>
+  ta.innerHTML=`<button class="btn-add" onclick="openModal('talep',null)"><i class="ti ti-plus"></i> ${i18n('addRequest')}</button>
   ${canExcel()?`<button class="btn-excel" onclick="excelTalepler()"><i class="ti ti-file-spreadsheet"></i> Excel</button>`:''}`;
   let fil=[...talepler];
   if(tF==='Almak')fil=fil.filter(t=>t.tip==='Almak');
   if(tF==='Kiralamak')fil=fil.filter(t=>t.tip==='Kiralamak');
-  if(tF===t('residential'))fil=fil.filter(t=>t.kategori===t('residential'));
-  if(tF===t('land'))fil=fil.filter(t=>t.kategori===t('land'));
+  if(tF===i18n('residential'))fil=fil.filter(t=>t.kategori===i18n('residential'));
+  if(tF===i18n('land'))fil=fil.filter(t=>t.kategori===i18n('land'));
   if(tF==='Acil')fil=fil.filter(t=>t.durum==='Acil');
   const tid='tbl-t';initF(tid);
   c.innerHTML=`
-  <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${['Tümü','Almak','Kiralamak',t('residential'),t('land'),'Acil'].map(f=>`<button class="sfbtn${tF===f?' active':''}" onclick="setTF('${f}')">${f}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
+  <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${['Tümü','Almak','Kiralamak',i18n('residential'),i18n('land'),'Acil'].map(f=>`<button class="sfbtn${tF===f?' active':''}" onclick="setTF('${f}')">${f}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
     ${mTH(tid,'musteri','Müşteri')}${mTH(tid,'tip','Talep','80px')}${mTH(tid,'kategori','Kategori','80px')}${mTH(tid,'altTip','Alt Tip','100px')}${mTH(tid,'bolge','Bölge')}${mTH(tid,'butce','Bütçe')}${mTH(tid,'durum','Durum','85px')}${mTH(tid,'tarih','Tarih','90px')}${mTH(tid,'sorumlu','Sorumlu')}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="10"><div class="empty"><i class="ti ti-inbox"></i><p>Talep yok</p></div></td></tr>`:''}
   ${fil.map(t=>{
-    const altTip=t.kategori===t('residential')?(t.konutTip||''):(t.arsaNitelik||'');
+    const altTip=t.kategori===i18n('residential')?(t.konutTip||''):(t.arsaNitelik||'');
     const sorumlu=getUserName(t._uid);
     const editable=canEdit(t);
     return `<tr data-row="1" data-musteri="${(t.musteri||'').toLowerCase()}" data-tip="${(t.tip||'').toLowerCase()}" data-kategori="${(t.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-bolge="${(t.bolge||'').toLowerCase()}" data-butce="${t.butce||0}" data-durum="${(t.durum||'').toLowerCase()}" data-tarih="${t.tarih||''}" data-sorumlu="${sorumlu.toLowerCase()}">
@@ -1159,7 +1159,7 @@ function excelTalepler(){
 }
 
 function renderMusteriler(c,ta){
-  ta.innerHTML=`<button class="btn-add" onclick="openModal('musteri',null)"><i class="ti ti-plus"></i> ${t('addCustomer')}</button>
+  ta.innerHTML=`<button class="btn-add" onclick="openModal('musteri',null)"><i class="ti ti-plus"></i> ${i18n('addCustomer')}</button>
   ${canExcel()?`<button class="btn-excel" onclick="excelMusteriler()"><i class="ti ti-file-spreadsheet"></i> Excel</button>`:''}`;
   const tid='tbl-m';initF(tid);
   c.innerHTML=`
@@ -1213,7 +1213,7 @@ function komCalc(liste){
 function gCard(label,val){const cls=val===null?'nt':(val>=0?'up':'dn');const ico=val===null?'ti-minus':(val>=0?'ti-trending-up':'ti-trending-down');const txt=val===null?'Veri yok':(val>=0?`+${val}%`:`${val}%`);return `<div class="gc ${cls}"><div class="gcl"><div class="gct">${label}</div><div class="gcv">${txt}</div></div><i class="ti ${ico} gci"></i></div>`;}
 
 function renderKomisyon(c,ta){
-  ta.innerHTML=`<button class="btn-add" onclick="openModal('komisyon',null)"><i class="ti ti-plus"></i> ${t('addTransaction')}</button>
+  ta.innerHTML=`<button class="btn-add" onclick="openModal('komisyon',null)"><i class="ti ti-plus"></i> ${i18n('addTransaction')}</button>
   ${canExcel()?`<button class="btn-excel" onclick="excelKomisyon()"><i class="ti ti-file-spreadsheet"></i> Excel</button>`:''}`;
   const s=komCalc(komisyonlar);const tid='tbl-k';initF(tid);
   const isBroker=isBrokerPlus();
@@ -1302,7 +1302,7 @@ function excelKomisyon(){
 function buildChart(){
   const canvas=el('komChart');if(!canvas)return;
   const now=new Date();const months=[],labels=[];
-  for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);labels.push(t('months')[d.getMonth()]);}
+  for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);labels.push(i18n('months')[d.getMonth()]);}
   const data=months.map(m=>komisyonlar.filter(k=>k.tarih===m).reduce((s,k)=>s+parseInt(k.netKomisyon||0),0));
   if(chartInst)chartInst.destroy();
   chartInst=new Chart(canvas,{type:'bar',data:{labels,datasets:[{type:'bar',label:'Net',data,backgroundColor:'rgba(26,82,118,0.15)',borderColor:'rgba(26,82,118,0.4)',borderWidth:1,borderRadius:4,order:2},{type:'line',label:'Trend',data,borderColor:'#1a5276',borderWidth:2,pointBackgroundColor:'#1a5276',pointRadius:3,tension:0.3,fill:false,order:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ₺'+parseInt(ctx.raw||0).toLocaleString('tr-TR')}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0f2f5'},ticks:{font:{size:10},callback:v=>'₺'+parseInt(v).toLocaleString('tr-TR')}}}}});
@@ -1312,7 +1312,7 @@ function renderYT(){
   const sel=el('year-sel');if(!sel)return;
   const year=sel.value;
   const months=['01','02','03','04','05','06','07','08','09','10','11','12'];
-  const names=t('months');
+  const names=i18n('months');
   const rows=months.map((m,i)=>{const key=`${year}-${m}`;const ks=komisyonlar.filter(k=>k.tarih===key);const baz=ks.reduce((s,k)=>s+parseInt(k.bazKomisyon||0),0),ekl=ks.reduce((s,k)=>s+parseInt(k.ekleme||0),0),isk=ks.reduce((s,k)=>s+parseInt(k.iskonto||0),0),net=ks.reduce((s,k)=>s+parseInt(k.netKomisyon||0),0);return `<tr style="${ks.length===0?'opacity:0.4':''}"><td style="font-size:12px;font-weight:500">${names[i]}</td><td style="font-size:12px;text-align:center">${ks.length}</td><td style="font-size:12px;text-align:right">${para(baz)}</td><td style="font-size:12px;text-align:right;color:#166534">${ekl>0?para(ekl):'-'}</td><td style="font-size:12px;text-align:right;color:#991b1b">${isk>0?para(isk):'-'}</td><td style="font-size:12px;text-align:right;font-weight:600;color:var(--pr)">${para(net)}</td></tr>`;});
   el('year-table').innerHTML=`<div class="tw"><table style="min-width:360px"><thead><tr><th><div class="th-inner"><span class="th-label">Ay</span></div></th><th><div class="th-inner"><span class="th-label">İşlem</span></div></th><th><div class="th-inner"><span class="th-label">Baz</span></div></th><th><div class="th-inner"><span class="th-label">Ekleme</span></div></th><th><div class="th-inner"><span class="th-label">İskonto</span></div></th><th><div class="th-inner"><span class="th-label">Net</span></div></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
@@ -1330,7 +1330,7 @@ function renderKullanicilar(c,ta){
   } else if(maxU===1){
     btnHTML=`<button class="btn-add" disabled style="opacity:.4;cursor:not-allowed"><i class="ti ti-user-plus"></i> Kullanıcı Ekle (1 kullanıcı limiti)</button>`;
   } else {
-    btnHTML=`<button class="btn-add" onclick="openModal('davet',null)"><i class="ti ti-user-plus"></i> ${t('inviteUser')} (${curU}/${maxU})</button>`;
+    btnHTML=`<button class="btn-add" onclick="openModal('davet',null)"><i class="ti ti-user-plus"></i> ${i18n('inviteUser')} (${curU}/${maxU})</button>`;
   }
   ta.innerHTML=btnHTML;
   const list=users.filter(u=>u.tenant_id===currentProfile.tenant_id);
@@ -1362,7 +1362,7 @@ function renderKullanicilar(c,ta){
 }
 
 function renderSirketler(c,ta){
-  ta.innerHTML=`<button class="btn-add" onclick="openModal('sirket',null)"><i class="ti ti-plus"></i> ${t('addCompany')}</button>`;
+  ta.innerHTML=`<button class="btn-add" onclick="openModal('sirket',null)"><i class="ti ti-plus"></i> ${i18n('addCompany')}</button>`;
   const sirketList=tenants.filter(t=>t.id!=='00000000-0000-0000-0000-000000000001');
   c.innerHTML=`
   <div class="sg" style="grid-template-columns:repeat(3,1fr);margin-bottom:18px">
@@ -1400,7 +1400,7 @@ async function deleteTenant(id){
   const{error}=await sb.from('tenants').delete().eq('id',id);
   if(error){alert('Silme hatası: '+error.message);return;}
   tenants=tenants.filter(t=>t.id!==id);
-  toast(t('companyDeleted'));
+  toast(i18n('companyDeleted'));
   render();
 }
 
@@ -1446,7 +1446,7 @@ function openModal(type,rid){
 
   if(type==='portfolio'){
     title=item?'İlanı Düzenle':'Yeni İlan';
-    const kat=item?item.kategori:t('residential');const isA=kat===t('land');
+    const kat=item?item.kategori:i18n('residential');const isA=kat===i18n('land');
     const tip=item?item.tip:ptabTip;
     const ilOpts=Object.keys(ILLER).sort().map(il=>`<option${il===(item?.il||'')?' selected':''}>${il}</option>`).join('');
     const ilceOpts=(ILLER[item?.il||'']||[]).map(i=>`<option${i===(item?.ilce||'')?' selected':''}>${i}</option>`).join('');
@@ -1454,7 +1454,7 @@ function openModal(type,rid){
     <div class="fdiv">Genel</div>
     <div class="fr">
       <div class="fg"><label>Tip</label><select id="f_tip" onchange="updDurumOpts()"><option${tip==='Satılık'?' selected':''}>Satılık</option><option${tip==='Kiralık'?' selected':''}>Kiralık</option></select></div>
-      <div class="fg"><label>Kategori</label><select id="f_kat" onchange="mTK(this.value)"><option value=t('residential')${!isA?' selected':''}>Konut</option><option value=t('land')${isA?' selected':''}>Arsa</option></select></div>
+      <div class="fg"><label>Kategori</label><select id="f_kat" onchange="mTK(this.value)"><option value=i18n('residential')${!isA?' selected':''}>Konut</option><option value=i18n('land')${isA?' selected':''}>Arsa</option></select></div>
     </div>
     <div class="fg"><label>Başlık</label><input id="f_baslik" value="${item?item.baslik||'':''}" placeholder="İlan başlığı"></div>
     <div class="fdiv">Konum</div>
@@ -1478,7 +1478,7 @@ function openModal(type,rid){
     <div id="sa"${!isA?' class="hidden"':''}>
       <div class="fdiv">Arsa</div>
       <div class="fr">
-        <div class="fg"><label>Nitelik</label><select id="f_nitelik" onchange="mTN(this.value)"><option${(!item||item.nitelik===t('land'))?' selected':''}>Arsa</option><option${(item&&item.nitelik==='Tarla')?' selected':''}>Tarla</option><option${(item&&item.nitelik==='Köyiçi İmar')?' selected':''}>Köyiçi İmar</option><option${(item&&item.nitelik==='Diğer')?' selected':''}>Diğer</option></select></div>
+        <div class="fg"><label>Nitelik</label><select id="f_nitelik" onchange="mTN(this.value)"><option${(!item||item.nitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.nitelik==='Tarla')?' selected':''}>Tarla</option><option${(item&&item.nitelik==='Köyiçi İmar')?' selected':''}>Köyiçi İmar</option><option${(item&&item.nitelik==='Diğer')?' selected':''}>Diğer</option></select></div>
         <div class="fg"><label>Alan (m²)</label><input id="f_alan_a" type="number" value="${item?item.alan||'':''}" placeholder="0"></div>
       </div>
       <div class="fg${(item&&item.nitelik==='Diğer')?'':' hidden'}" id="sna"><label>Nitelik Açıklaması</label><input id="f_na" value="${item?item.nitelikAciklama||'':''}" placeholder="Açıklayın…"></div>
@@ -1508,7 +1508,7 @@ function openModal(type,rid){
 
   if(type==='talep'){
     title=item?'Talebi Düzenle':'Yeni Talep';
-    const kat=item?item.kategori:t('residential');const isA=kat===t('land');
+    const kat=item?item.kategori:i18n('residential');const isA=kat===i18n('land');
     body=`
     <div class="fr">
       <div class="fg"><label>Müşteri</label><input id="f_musteri" value="${item?item.musteri||'':''}" placeholder="Ad Soyad"></div>
@@ -1516,13 +1516,13 @@ function openModal(type,rid){
     </div>
     <div class="fr">
       <div class="fg"><label>Talep Tipi</label><select id="f_tip"><option${(!item||item.tip==='Almak')?' selected':''}>Almak</option><option${(item&&item.tip==='Kiralamak')?' selected':''}>Kiralamak</option></select></div>
-      <div class="fg"><label>Kategori</label><select id="f_kat" onchange="tTK(this.value)"><option value=t('residential')${!isA?' selected':''}>Konut</option><option value=t('land')${isA?' selected':''}>Arsa</option></select></div>
+      <div class="fg"><label>Kategori</label><select id="f_kat" onchange="tTK(this.value)"><option value=i18n('residential')${!isA?' selected':''}>Konut</option><option value=i18n('land')${isA?' selected':''}>Arsa</option></select></div>
     </div>
     <div id="tk"${isA?' class="hidden"':''}>
       <div class="fg"><label>Konut Tipi</label><select id="f_kt"><option${(!item||item.konutTip==='Daire')?' selected':''}>Daire</option><option${(item&&item.konutTip==='Villa')?' selected':''}>Villa</option><option${(item&&item.konutTip==='Müstakil Ev')?' selected':''}>Müstakil Ev</option></select></div>
     </div>
     <div id="ta2"${!isA?' class="hidden"':''}>
-      <div class="fg"><label>Arsa Niteliği</label><select id="f_an" onchange="tTN(this.value)"><option${(!item||item.arsaNitelik===t('land'))?' selected':''}>Arsa</option><option${(item&&item.arsaNitelik==='Tarla')?' selected':''}>Tarla</option><option${(item&&item.arsaNitelik==='Köyiçi İmarlı')?' selected':''}>Köyiçi İmarlı</option><option${(item&&item.arsaNitelik==='Diğer')?' selected':''}>Diğer</option></select></div>
+      <div class="fg"><label>Arsa Niteliği</label><select id="f_an" onchange="tTN(this.value)"><option${(!item||item.arsaNitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.arsaNitelik==='Tarla')?' selected':''}>Tarla</option><option${(item&&item.arsaNitelik==='Köyiçi İmarlı')?' selected':''}>Köyiçi İmarlı</option><option${(item&&item.arsaNitelik==='Diğer')?' selected':''}>Diğer</option></select></div>
       <div class="fg hidden" id="taa"><label>Açıklama</label><input id="f_ana" value="${item?item.arsaNitelikAciklama||'':''}" placeholder="Açıklayın…"></div>
     </div>
     <div class="fr">
@@ -1576,7 +1576,7 @@ function openModal(type,rid){
   }
 
   if(type==='davet'){
-    title=t('inviteUser');
+    title=i18n('inviteUser');
     body=`
     <div class="fg"><label>Ad Soyad</label><input id="f_ad" placeholder="Kullanıcının adı soyadı"></div>
     <div class="fg"><label>E-posta <span style="color:#991b1b">*</span></label><input id="f_email" type="email" placeholder="mail@ornek.com"></div>
@@ -1646,7 +1646,7 @@ function openModal(type,rid){
   
   const mf=document.createElement('div');
   mf.className='mf';
-  mf.innerHTML=`<button class="bc" onclick="closeModal()">${t('cancel')}</button><button class="bs" id="save-btn" onclick="saveItem()">${t('save')}</button>`;
+  mf.innerHTML=`<button class="bc" onclick="closeModal()">${i18n('cancel')}</button><button class="bs" id="save-btn" onclick="saveItem()">${i18n('save')}</button>`;
   
   modalDiv.appendChild(mh);
   modalDiv.appendChild(mb);
@@ -1669,9 +1669,9 @@ function updDurumOpts(){
   if(sk)sk.innerHTML=durumOpts(tip,'Aktif');
   if(sa)sa.innerHTML=durumOpts(tip,'Aktif');
 }
-function mTK(v){const isA=v===t('land');el('sk')?.classList.toggle('hidden',isA);el('sa')?.classList.toggle('hidden',!isA);}
+function mTK(v){const isA=v===i18n('land');el('sk')?.classList.toggle('hidden',isA);el('sa')?.classList.toggle('hidden',!isA);}
 function mTN(v){el('sna')?.classList.toggle('hidden',v!=='Diğer');}
-function tTK(v){const isA=v===t('land');el('tk')?.classList.toggle('hidden',isA);el('ta2')?.classList.toggle('hidden',!isA);}
+function tTK(v){const isA=v===i18n('land');el('tk')?.classList.toggle('hidden',isA);el('ta2')?.classList.toggle('hidden',!isA);}
 function tTN(v){el('taa')?.classList.toggle('hidden',v!=='Diğer');}
 function acS(q){const l=el('acl');if(!l)return;if(!q){l.style.display='none';return;}const fil=musteriler.filter(m=>m.ad.toLowerCase().includes(q.toLowerCase())||(m.tel||'').includes(q));if(!fil.length){l.style.display='none';return;}l.innerHTML=fil.map(m=>`<div class="ac-item" onclick="acSel('${m._rid}','${m.ad.replace(/'/g,"\\'")}')"><div class="ac-name">${m.ad}</div><div class="ac-tel">${m.tel||''}</div></div>`).join('');l.style.display='block';}
 function acSel(rid,ad){const i=el('f_mi'),h=el('f_mid'),l=el('acl');if(i)i.value=ad;if(h)h.value=rid;if(l)l.style.display='none';}
@@ -1711,11 +1711,11 @@ function updatePortfoyList(tip, curVal=''){
 }
 
 async function saveItem(){
-  const btn=el('save-btn');if(btn){btn.disabled=true;btn.textContent=t('registering');}
+  const btn=el('save-btn');if(btn){btn.disabled=true;btn.textContent=i18n('registering');}
   try{
     const ownerUid=sv('f_owner')||currentUser.id;
     if(modalType==='portfolio'){
-      const kat=sv('f_kat');const isA=kat===t('land');
+      const kat=sv('f_kat');const isA=kat===i18n('land');
       if(!sv('f_baslik')){alert('Başlık zorunlu');return;}
       const fiyatRaw=parseFiyat(sv('f_fiyat'));
       const obj={
@@ -1739,7 +1739,7 @@ async function saveItem(){
     }
     else if(modalType==='talep'){
       if(!sv('f_musteri')){alert('Müşteri adı zorunlu');return;}
-      const kat=sv('f_kat');const isA=kat===t('land');
+      const kat=sv('f_kat');const isA=kat===i18n('land');
       const obj={musteri:sv('f_musteri'),tarih:sv('f_tarih'),tip:sv('f_tip'),kategori:kat,konutTip:isA?'':sv('f_kt'),arsaNitelik:isA?sv('f_an'):'',arsaNitelikAciklama:isA?sv('f_ana'):'',bolge:sv('f_bolge'),butce:parseFiyat(sv('f_butce')),detay:sv('f_detay'),durum:sv('f_durum')};
       if(editId){
         const{error}=await sb.from('talepler').update({data:obj,user_id:ownerUid}).eq('id',parseInt(editId));
@@ -1808,7 +1808,7 @@ async function saveItem(){
       const newRol=sv('f_rol');
       await sb.from('profiles').update({role:newRol}).eq('id',editId);
       const u=users.find(u=>u.id===editId);if(u)u.role=newRol;
-      toast(t('roleUpdated'));
+      toast(i18n('roleUpdated'));
     }
     else if(modalType==='sirket'){
       const sName=sv('f_sirket');
@@ -1821,7 +1821,7 @@ async function saveItem(){
         if(updErr){alert('Güncelleme hatası: '+updErr.message);return;}
         const t=tenants.find(t=>t.id===editId);
         if(t){t.name=sName;t.max_users=maxUsers;t.is_active=isAktif;}
-        toast(t('companyUpdated'));
+        toast(i18n('companyUpdated'));
       } else {
         // Yeni şirket
         const adName=sv('f_ad'),email=sv('f_email');
@@ -1836,15 +1836,15 @@ async function saveItem(){
         toast('Şirket oluşturuldu, Broker\'a davet maili gönderildi ✓');
       }
     }
-    closeModal();syncBar(t('saved'));render();
-  }catch(e){syncBar(t('errorSave')+' '+e.message,true);alert('Hata: '+e.message);}
+    closeModal();syncBar(i18n('saved'));render();
+  }catch(e){syncBar(i18n('errorSave')+' '+e.message,true);alert('Hata: '+e.message);}
   finally{if(btn){btn.disabled=false;btn.textContent='Kaydet';}}
 }
 
 // ── SİL ────────────────────────────────────────────────
 async function delItem(type,rid){
   if(!canDelete()){toast('Silme yetkiniz yok','ti-alert-circle');return;}
-  if(!confirm(t('confirmDelete')))return;
+  if(!confirm(i18n('confirmDelete')))return;
   try{
     const tblMap={portfolio:'portfolio',talep:'talepler',musteri:'musteriler',komisyon:'komisyonlar'};
     await dbDelete(tblMap[type],rid);
@@ -1852,8 +1852,8 @@ async function delItem(type,rid){
     if(type==='talep')talepler=talepler.filter(t=>t._rid!=rid);
     if(type==='musteri')musteriler=musteriler.filter(m=>m._rid!=rid);
     if(type==='komisyon')komisyonlar=komisyonlar.filter(k=>k._rid!=rid);
-    toast(t('deleted').replace('☁ ',''));syncBar(t('deleted'));render();
-  }catch(e){syncBar(t('errorDelete'),true);}
+    toast(i18n('deleted').replace('☁ ',''));syncBar(i18n('deleted'));render();
+  }catch(e){syncBar(i18n('errorDelete'),true);}
 }
 
 // ── SERVICE WORKER ─────────────────────────────────────
