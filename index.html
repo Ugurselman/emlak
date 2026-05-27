@@ -209,7 +209,7 @@ const LANGS = {
     save: 'Kaydet', cancel: 'İptal', edit: 'Düzenle', delete: 'Sil',
     add: 'Ekle', close: 'Kapat', yes: 'Evet', no: 'Hayır',
     search: 'Ara', filter: 'Filtre', clearFilter: 'Temizle',
-    activeFilters: 'filtre aktif', noData: i18n('noData'),
+    activeFilters: 'filtre aktif', noData: 'Veri yok',
     saved: '☁ Kaydedildi', deleted: '☁ Silindi',
     errorSave: '⚠ Hata:', errorDelete: '⚠ Silme hatası',
     confirmDelete: 'Silmek istediğinizden emin misiniz?',
@@ -245,7 +245,7 @@ const LANGS = {
     totalPortfolio: 'Portföy', active: 'aktif',
     forSaleLabel: 'Satılık', forRentLabel: 'Kiralık',
     totalCommission: 'Top. Komisyon', openRequests: 'açık talep', urgentRequests: 'acil talep',
-    recentPortfolio: i18n('recentPortfolio'), recentRequests: i18n('recentRequests'),
+    recentPortfolio: 'Son Portföyler', recentRequests: 'Son Talepler',
     noListings: 'Henüz ilan yok', noRequests: 'Henüz talep yok',
     // Portföy
     addListing: 'İlan Ekle', excel: 'Excel',
@@ -283,7 +283,7 @@ const LANGS = {
     // Talepler
     addRequest: 'Talep Ekle', newRequest: 'Yeni Talep', editRequest: 'Talebi Düzenle',
     customerName: 'Müşteri', date: 'Tarih', requestType: 'Talep Tipi',
-    toBuy: i18n('toBuy'), toRent: i18n('toRent'), region: 'Bölge', budget: 'Bütçe',
+    toBuy: 'Almak', toRent: 'Kiralamak', region: 'Bölge', budget: 'Bütçe',
     detail: 'Detay', noRequests2: 'Talep yok',
     residentialTypeLabel: 'Konut Tipi', landQualityLabel: 'Arsa Niteliği',
     customerRequired: 'Müşteri adı zorunlu',
@@ -303,12 +303,12 @@ const LANGS = {
     addition: 'Ekleme (₺)', discount: 'İskonto (₺)', netCommission: 'Net Komisyon (₺)',
     noTransactions: 'İşlem yok', amountRequired: 'İşlem tutarı zorunlu',
     portfolioRequired: 'Portföy adı zorunludur', noPortfolioFound: 'Bu tipte portföy bulunamadı',
-    thisMonth: i18n('thisMonth'), thisYear: i18n('thisYear'), total: i18n('total'),
-    totalAddition: i18n('totalAddition'), totalDiscount: i18n('totalDiscount'), netDiff: i18n('netDiff'),
-    monthlyGrowth: 'Aylık Büyüme', quarterGrowth: i18n('quarterGrowth'), yearlyGrowth: 'Yıllık Büyüme',
-    noData: i18n('noData'), monthlyChart: i18n('monthlyChart'),
-    userBasedSummary: i18n('userBasedSummary'), transactions: 'İşlem',
-    monthlySummary: i18n('monthlySummary'), year: 'Yıl',
+    thisMonth: 'Bu Ay Net', thisYear: 'Bu Yıl Net', total: 'Toplam',
+    totalAddition: 'Toplam Ekleme', totalDiscount: 'Toplam İskonto', netDiff: 'Net Fark',
+    monthlyGrowth: 'Aylık Büyüme', quarterGrowth: 'Quarter Büyüme', yearlyGrowth: 'Yıllık Büyüme',
+    noData: 'Veri yok', monthlyChart: 'Aylık Net Komisyon (Son 12 Ay)',
+    userBasedSummary: 'Kullanıcı Bazlı Özet', transactions: 'İşlem',
+    monthlySummary: 'Aylık Özet Tablo', year: 'Yıl',
     months: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
     // Kullanıcılar
     inviteUser: 'Kullanıcı Davet Et', userAdded: 'Kullanıcı eklendi ✓',
@@ -351,7 +351,7 @@ const LANGS = {
     statusWaiting: 'Beklemede', statusClosed: 'Kapandı', statusUrgent: 'Acil',
     // Filtreler
     allFilter: 'Tümü', myListingsBtn: 'Benim İlanlarım',
-    noData: i18n('noData'), noListingsFound: 'İlan bulunamadı',
+    noData: 'Veri yok', noListingsFound: 'İlan bulunamadı',
     noRequestsFound: 'Talep bulunamadı', noCustomersFound: 'Müşteri bulunamadı',
     noTransactionsFound: 'İşlem yok',
     filtersActive: 'filtre aktif',
@@ -447,7 +447,7 @@ const LANGS = {
     portfolioRequired: 'Portfolio is required', noPortfolioFound: 'No portfolio found for this type',
     thisMonth: 'This Month Net', thisYear: 'This Year Net', total: 'Total',
     totalAddition: 'Total Addition', totalDiscount: 'Total Discount', netDiff: 'Net Difference',
-    monthlyGrowth: i18n('monthlyGrowth'), quarterGrowth: 'Quarter Growth', yearlyGrowth: i18n('yearlyGrowth'),
+    monthlyGrowth: 'Monthly Growth', quarterGrowth: 'Quarter Growth', yearlyGrowth: 'Yearly Growth',
     monthlyChart: 'Monthly Net Commission (Last 12 Months)',
     userBasedSummary: 'User Based Summary', transactions: 'Transactions',
     monthlySummary: 'Monthly Summary Table', year: 'Year',
@@ -1139,7 +1139,7 @@ function renderDash(c){
     <div class="sc ac"><div class="sl"><i class="ti ti-home"></i>${i18n('portfolio')}</div><div class="sv">${portfolio.length}</div><div class="ss">${aktif} ${i18n('active')}</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-tag"></i>${i18n('forSale')}</div><div class="sv">${sat.length}</div><div class="ss">${sat.filter(p=>p.kategori==='Konut').length} konut · ${sat.filter(p=>p.kategori==='Arsa').length} arsa</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-key"></i>${i18n('forRent')}</div><div class="sv">${kir.length}</div><div class="ss">${kir.filter(p=>p.kategori==='Konut').length} konut · ${kir.filter(p=>p.kategori==='Arsa').length} arsa</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> ${i18n('totalCommission')}</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' '+i18n('urgentRequests'):talepler.filter(t=>t.durum!==i18n('statusClosed')).length+' '+i18n('openRequests')}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> ${i18n('totalCommission')}</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' '+i18n('urgentRequests'):talepler.filter(t=>t.durum!=='Kapandı').length+' '+i18n('openRequests')}</div></div>
   </div>
   <div class="dg">
     <div><div class="dst">Son Portföyler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colListing')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colPrice')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
@@ -1152,7 +1152,7 @@ function renderDash(c){
 }
 
 function renderPortfoy(c,ta){
-  const tipL=ptab==='satilik'?i18n('forSaleOpt'):i18n('forRentOpt');
+  const tipL=ptab==='satilik'?'Satılık':'Kiralık';
   ta.innerHTML=`<button class="btn-add" onclick="openModal('portfolio',null)"><i class="ti ti-plus"></i> ${i18n('addListing')}</button>
   ${canExcel()?`<button class="btn-excel" onclick="excelPortfoy()"><i class="ti ti-file-spreadsheet"></i> ${i18n('excel')}</button>`:''}`;
   let fil=portfolio.filter(p=>p.tip===tipL);
@@ -1199,7 +1199,7 @@ function renderPortfoy(c,ta){
 }
 
 function excelPortfoy(){
-  const tipL=ptab==='satilik'?i18n('forSaleOpt'):i18n('forRentOpt');
+  const tipL=ptab==='satilik'?'Satılık':'Kiralık';
   const fil=portfolio.filter(p=>p.tip===tipL);
   exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL===i18n('forRentOpt'))})),[
     {key:'baslik',label:i18n('title')},{key:'kategori',label:'Kategori'},{key:'konutTip',label:'Konut Tipi'},{key:'nitelik',label:'Nitelik'},
@@ -1524,7 +1524,7 @@ function openModal(type,rid){
     if(type==='sirket')item=tenants.find(t=>t.id===rid);
   }
   let body='',title='';
-  const ptabTip=ptab==='satilik'?i18n('forSaleOpt'):i18n('forRentOpt');
+  const ptabTip=ptab==='satilik'?'Satılık':'Kiralık';
 
   // İlan sahibi seçim alanı (broker/asistan için liste, danışman için kendi adı)
   const tenantUsers=users.filter(u=>u.tenant_id===currentProfile.tenant_id&&u.is_active);
@@ -1542,7 +1542,7 @@ function openModal(type,rid){
 
   if(type==='portfolio'){
     title=item?i18n('editListing'):i18n('newListing');
-    const kat=item?item.kategori:i18n('residential');const isA=kat===i18n('land');
+    const kat=item?item.kategori:'Konut';const isA=kat===i18n('land');
     const tip=item?item.tip:ptabTip;
     const ilOpts=Object.keys(ILLER).sort().map(il=>`<option${il===(item?.il||'')?' selected':''}>${il}</option>`).join('');
     const ilceOpts=(ILLER[item?.il||'']||[]).map(i=>`<option${i===(item?.ilce||'')?' selected':''}>${i}</option>`).join('');
@@ -1604,7 +1604,7 @@ function openModal(type,rid){
 
   if(type==='talep'){
     title=item?i18n('editRequest'):i18n('newRequest');
-    const kat=item?item.kategori:i18n('residential');const isA=kat===i18n('land');
+    const kat=item?item.kategori:'Konut';const isA=kat===i18n('land');
     body=`
     <div class="fr">
       <div class="fg"><label>${i18n('customer')}</label><input id="f_musteri" value="${item?item.musteri||'':''}" placeholder="Ad Soyad"></div>
