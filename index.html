@@ -297,7 +297,7 @@ async function dbInsert(tbl,data,ownerUid=null){
   return {...data,_rid:row.id,_uid:uid};
 }
 async function dbUpdate(tbl,rid,data){
-  const{error}=await sb.from(tbl).update({data}).eq('id',rid);
+  const{error}=await sb.from(tbl).update({data}).eq('id',parseInt(rid)||rid);
   if(error)throw error;
   return {...data,_rid:rid};
 }
@@ -1263,18 +1263,19 @@ function kAC(){
 function updatePortfoyList(tip, curVal=''){
   const sel=el('f_portfoy');
   if(!sel)return;
-  // Tip'e göre portföyleri filtrele
+  // Tüm olası durum değerlerini kabul et
   let filtered=[];
   if(tip==='Satış'){
-    filtered=portfolio.filter(p=>p.tip==='Satılık'&&p.durum==='Satıldı');
+    filtered=portfolio.filter(p=>(p.tip==='Satılık')&&(p.durum==='Satıldı'||p.durum==='Aktif'||p.durum==='Başkası Sattı'||p.durum==='Satmaktan Vazgeçti'));
   } else if(tip==='Kiralama'){
-    filtered=portfolio.filter(p=>p.tip==='Kiralık'&&p.durum==='Kiralandı');
+    filtered=portfolio.filter(p=>(p.tip==='Kiralık')&&(p.durum==='Kiralandı'||p.durum==='Aktif'||p.durum==='Başkası Kiraladı'||p.durum==='Kiralamaktan Vazgeçti'));
+  }
+  if(filtered.length===0){
+    sel.innerHTML='<option value="">Bu tipte portföy bulunamadı</option>';
+    return;
   }
   sel.innerHTML='<option value="">Portföy seçin…</option>'+
-    filtered.map(p=>`<option value="${p.baslik}"${p.baslik===curVal?' selected':''}>${p.baslik} — ${p.il||''} ${p.ilce||''}</option>`).join('');
-  if(filtered.length===0){
-    sel.innerHTML='<option value="">Bu tipte tamamlanmış portföy yok</option>';
-  }
+    filtered.map(p=>`<option value="${p.baslik}"${p.baslik===curVal?' selected':''}>${p.baslik}${p.durum&&p.durum!=='Aktif'?' ('+p.durum+')':''} — ${p.il||''} ${p.ilce||''}</option>`).join('');
 }
 
 async function saveItem(){
@@ -1297,7 +1298,7 @@ async function saveItem(){
         mahalle:isA?sv('f_mahalle'):'',ada:isA?sv('f_ada'):'',parsel:isA?sv('f_parsel'):''
       };
       if(editId){
-        const{error}=await sb.from('portfolio').update({data:obj,user_id:ownerUid}).eq('id',editId);
+        const{error}=await sb.from('portfolio').update({data:obj,user_id:ownerUid}).eq('id',parseInt(editId));
         if(error)throw error;
         portfolio=portfolio.map(p=>p._rid==editId?{...obj,_rid:editId,_uid:ownerUid}:p);
       } else {
@@ -1309,7 +1310,7 @@ async function saveItem(){
       const kat=sv('f_kat');const isA=kat==='Arsa';
       const obj={musteri:sv('f_musteri'),tarih:sv('f_tarih'),tip:sv('f_tip'),kategori:kat,konutTip:isA?'':sv('f_kt'),arsaNitelik:isA?sv('f_an'):'',arsaNitelikAciklama:isA?sv('f_ana'):'',bolge:sv('f_bolge'),butce:parseFiyat(sv('f_butce')),detay:sv('f_detay'),durum:sv('f_durum')};
       if(editId){
-        const{error}=await sb.from('talepler').update({data:obj,user_id:ownerUid}).eq('id',editId);
+        const{error}=await sb.from('talepler').update({data:obj,user_id:ownerUid}).eq('id',parseInt(editId));
         if(error)throw error;
         talepler=talepler.map(t=>t._rid==editId?{...obj,_rid:editId,_uid:ownerUid}:t);
       } else {const r=await dbInsert('talepler',obj,ownerUid);talepler.push(r);}
@@ -1332,7 +1333,7 @@ async function saveItem(){
       const selPortfoy=portfolio.find(p=>p.baslik===portfoyVal.split(' — ')[0]);
       const obj={tarih:sv('f_tarih'),tip:sv('f_tip'),portfoyAd:portfoyVal.split(' — ')[0],musteriAd:sv('f_musteri'),islemTutari:islemRaw,bazKomisyon:String(baz),ekleme:String(ek),iskonto:String(is),netKomisyon:String(baz+ek-is),not:sv('f_not')};
       if(editId){
-        const{error}=await sb.from('komisyonlar').update({data:obj,user_id:ownerUid}).eq('id',editId);
+        const{error}=await sb.from('komisyonlar').update({data:obj,user_id:ownerUid}).eq('id',parseInt(editId));
         if(error)throw error;
         komisyonlar=komisyonlar.map(k=>k._rid==editId?{...obj,_rid:editId,_uid:ownerUid}:k);
       } else {const r=await dbInsert('komisyonlar',obj,ownerUid);komisyonlar.push(r);}
