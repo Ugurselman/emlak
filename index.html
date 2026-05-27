@@ -209,7 +209,7 @@ const LANGS = {
     save: 'Kaydet', cancel: 'İptal', edit: 'Düzenle', delete: 'Sil',
     add: 'Ekle', close: 'Kapat', yes: 'Evet', no: 'Hayır',
     search: 'Ara', filter: 'Filtre', clearFilter: 'Temizle',
-    activeFilters: 'filtre aktif', noData: 'Veri yok',
+    activeFilters: 'filtre aktif', noData: i18n('noData'),
     saved: '☁ Kaydedildi', deleted: '☁ Silindi',
     errorSave: '⚠ Hata:', errorDelete: '⚠ Silme hatası',
     confirmDelete: 'Silmek istediğinizden emin misiniz?',
@@ -245,7 +245,7 @@ const LANGS = {
     totalPortfolio: 'Portföy', active: 'aktif',
     forSaleLabel: 'Satılık', forRentLabel: 'Kiralık',
     totalCommission: 'Top. Komisyon', openRequests: 'açık talep', urgentRequests: 'acil talep',
-    recentPortfolio: 'Son Portföyler', recentRequests: 'Son Talepler',
+    recentPortfolio: i18n('recentPortfolio'), recentRequests: i18n('recentRequests'),
     noListings: 'Henüz ilan yok', noRequests: 'Henüz talep yok',
     // Portföy
     addListing: 'İlan Ekle', excel: 'Excel',
@@ -283,7 +283,7 @@ const LANGS = {
     // Talepler
     addRequest: 'Talep Ekle', newRequest: 'Yeni Talep', editRequest: 'Talebi Düzenle',
     customerName: 'Müşteri', date: 'Tarih', requestType: 'Talep Tipi',
-    toBuy: 'Almak', toRent: 'Kiralamak', region: 'Bölge', budget: 'Bütçe',
+    toBuy: i18n('toBuy'), toRent: i18n('toRent'), region: 'Bölge', budget: 'Bütçe',
     detail: 'Detay', noRequests2: 'Talep yok',
     residentialTypeLabel: 'Konut Tipi', landQualityLabel: 'Arsa Niteliği',
     customerRequired: 'Müşteri adı zorunlu',
@@ -303,12 +303,12 @@ const LANGS = {
     addition: 'Ekleme (₺)', discount: 'İskonto (₺)', netCommission: 'Net Komisyon (₺)',
     noTransactions: 'İşlem yok', amountRequired: 'İşlem tutarı zorunlu',
     portfolioRequired: 'Portföy adı zorunludur', noPortfolioFound: 'Bu tipte portföy bulunamadı',
-    thisMonth: 'Bu Ay Net', thisYear: 'Bu Yıl Net', total: 'Toplam',
-    totalAddition: 'Toplam Ekleme', totalDiscount: 'Toplam İskonto', netDiff: 'Net Fark',
-    monthlyGrowth: 'Aylık Büyüme', quarterGrowth: 'Quarter Büyüme', yearlyGrowth: 'Yıllık Büyüme',
-    noData: 'Veri yok', monthlyChart: 'Aylık Net Komisyon (Son 12 Ay)',
-    userBasedSummary: 'Kullanıcı Bazlı Özet', transactions: 'İşlem',
-    monthlySummary: 'Aylık Özet Tablo', year: 'Yıl',
+    thisMonth: i18n('thisMonth'), thisYear: i18n('thisYear'), total: i18n('total'),
+    totalAddition: i18n('totalAddition'), totalDiscount: i18n('totalDiscount'), netDiff: i18n('netDiff'),
+    monthlyGrowth: 'Aylık Büyüme', quarterGrowth: i18n('quarterGrowth'), yearlyGrowth: 'Yıllık Büyüme',
+    noData: i18n('noData'), monthlyChart: i18n('monthlyChart'),
+    userBasedSummary: i18n('userBasedSummary'), transactions: 'İşlem',
+    monthlySummary: i18n('monthlySummary'), year: 'Yıl',
     months: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
     // Kullanıcılar
     inviteUser: 'Kullanıcı Davet Et', userAdded: 'Kullanıcı eklendi ✓',
@@ -351,7 +351,7 @@ const LANGS = {
     statusWaiting: 'Beklemede', statusClosed: 'Kapandı', statusUrgent: 'Acil',
     // Filtreler
     allFilter: 'Tümü', myListingsBtn: 'Benim İlanlarım',
-    noData: 'Veri yok', noListingsFound: 'İlan bulunamadı',
+    noData: i18n('noData'), noListingsFound: 'İlan bulunamadı',
     noRequestsFound: 'Talep bulunamadı', noCustomersFound: 'Müşteri bulunamadı',
     noTransactionsFound: 'İşlem yok',
     filtersActive: 'filtre aktif',
@@ -447,7 +447,7 @@ const LANGS = {
     portfolioRequired: 'Portfolio is required', noPortfolioFound: 'No portfolio found for this type',
     thisMonth: 'This Month Net', thisYear: 'This Year Net', total: 'Total',
     totalAddition: 'Total Addition', totalDiscount: 'Total Discount', netDiff: 'Net Difference',
-    monthlyGrowth: 'Monthly Growth', quarterGrowth: 'Quarter Growth', yearlyGrowth: 'Yearly Growth',
+    monthlyGrowth: i18n('monthlyGrowth'), quarterGrowth: 'Quarter Growth', yearlyGrowth: i18n('yearlyGrowth'),
     monthlyChart: 'Monthly Net Commission (Last 12 Months)',
     userBasedSummary: 'User Based Summary', transactions: 'Transactions',
     monthlySummary: 'Monthly Summary Table', year: 'Year',
@@ -633,6 +633,48 @@ const LANGS = {
 };
 
 let currentLang = localStorage.getItem('emlak_lang') || 'tr';
+
+// DB değerlerini mevcut dile çeviren fonksiyon
+function tv(val){
+  const map={
+    'Satılık':{'en':'For Sale','ru':'Продажа'},
+    'Kiralık':{'en':'For Rent','ru':'Аренда'},
+    'Satış':{'en':'Sale','ru':'Продажа'},
+    'Kiralama':{'en':'Rental','ru':'Аренда'},
+    'Konut':{'en':'Residential','ru':'Жилое'},
+    'Arsa':{'en':'Land','ru':'Земля'},
+    'Daire':{'en':'Apartment','ru':'Квартира'},
+    'Villa':{'en':'Villa','ru':'Вилла'},
+    'Müstakil Ev':{'en':'Detached House','ru':'Частный дом'},
+    'Tarla':{'en':'Field','ru':'Поле'},
+    'Köyiçi İmar':{'en':'Village Zone','ru':'Сельская зона'},
+    'Köyiçi İmarlı':{'en':'Village Zone','ru':'Сельская зона'},
+    'Diğer':{'en':'Other','ru':'Другое'},
+    'Aktif':{'en':'Active','ru':'Активно'},
+    'Satıldı':{'en':'Sold','ru':'Продано'},
+    'Başkası Sattı':{'en':'Sold by Other','ru':'Продано другим'},
+    'Satmaktan Vazgeçti':{'en':'Withdrawn','ru':'Снято'},
+    'Kiralandı':{'en':'Rented','ru':'Сдано'},
+    'Başkası Kiraladı':{'en':'Rented by Other','ru':'Сдано другим'},
+    'Kiralamaktan Vazgeçti':{'en':'Withdrawn','ru':'Снято'},
+    'Beklemede':{'en':'Pending','ru':'Ожидание'},
+    'Kapandı':{'en':'Closed','ru':'Закрыто'},
+    'Acil':{'en':'Urgent','ru':'Срочно'},
+    'Almak':{'en':'To Buy','ru':'Купить'},
+    'Kiralamak':{'en':'To Rent','ru':'Арендовать'},
+    'Alıcı':{'en':'Buyer','ru':'Покупатель'},
+    'Satıcı':{'en':'Seller','ru':'Продавец'},
+    'Kiracı':{'en':'Tenant','ru':'Арендатор'},
+    'Kiraya Veren':{'en':'Landlord','ru':'Арендодатель'},
+    'Kurumsal':{'en':'Corporate','ru':'Корпоративный'},
+    'Broker':{'en':'Broker','ru':'Брокер'},
+    'Asistan':{'en':'Assistant','ru':'Ассистент'},
+    'G. Danışmanı':{'en':'RE Advisor','ru':'Агент'},
+    'Süper Admin':{'en':'Super Admin','ru':'Супер-Администратор'},
+  };
+  if(currentLang==='tr'||!val)return val||'';
+  return (map[val]&&map[val][currentLang])||val;
+}
 function i18n(key, ...args) {
   const val = LANGS[currentLang]?.[key] || LANGS['tr']?.[key] || key;
   if(typeof val === 'function') return val(...args);
@@ -1094,17 +1136,17 @@ function renderDash(c){
   const acil=talepler.filter(t=>t.durum==='Acil').length;
   c.innerHTML=`
   <div class="sg">
-    <div class="sc ac"><div class="sl"><i class="ti ti-home"></i> Portföy</div><div class="sv">${portfolio.length}</div><div class="ss">${aktif} aktif</div></div>
+    <div class="sc ac"><div class="sl"><i class="ti ti-home"></i>${i18n('portfolio')}</div><div class="sv">${portfolio.length}</div><div class="ss">${aktif} ${i18n('active')}</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-tag"></i>${i18n('forSale')}</div><div class="sv">${sat.length}</div><div class="ss">${sat.filter(p=>p.kategori==='Konut').length} konut · ${sat.filter(p=>p.kategori==='Arsa').length} arsa</div></div>
     <div class="sc"><div class="sl"><i class="ti ti-key"></i>${i18n('forRent')}</div><div class="sv">${kir.length}</div><div class="ss">${kir.filter(p=>p.kategori==='Konut').length} konut · ${kir.filter(p=>p.kategori==='Arsa').length} arsa</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> Top. Komisyon</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' acil talep':talepler.filter(t=>t.durum!==i18n('statusClosed')).length+' açık talep'}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> ${i18n('totalCommission')}</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' '+i18n('urgentRequests'):talepler.filter(t=>t.durum!==i18n('statusClosed')).length+' '+i18n('openRequests')}</div></div>
   </div>
   <div class="dg">
-    <div><div class="dst">Son Portföyler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">İlan</span></div></th><th><div class="th-inner"><span class="th-label">Fiyat</span></div></th><th><div class="th-inner"><span class="th-label">Durum</span></div></th></tr></thead><tbody>
-    ${portfolio.slice(-5).reverse().map(p=>`<tr><td><div class="cm">${p.baslik}</div><div class="cs">${p.il||''} ${p.ilce||''}</div></td><td class="pc">${para(p.fiyat,p.tip==='Kiralık')}</td><td><span class="${bc(p.durum)}">${p.durum}</span></td></tr>`).join('')||`<tr><td colspan="3"><div class="empty"><i class="ti ti-inbox"></i><p>Henüz ilan yok</p></div></td></tr>`}
+    <div><div class="dst">Son Portföyler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colListing')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colPrice')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
+    ${portfolio.slice(-5).reverse().map(p=>`<tr><td><div class="cm">${p.baslik}</div><div class="cs">${p.il||''} ${p.ilce||''}</div></td><td class="pc">${para(p.fiyat,p.tip==='Kiralık')}</td><td><span class="${bc(p.durum)}">${tv(p.durum)}</span></td></tr>`).join('')||`<tr><td colspan="3"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListings')}</p></div></td></tr>`}
     </tbody></table></div></div>
-    <div><div class="dst">Son Talepler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">Müşteri</span></div></th><th><div class="th-inner"><span class="th-label">Bütçe</span></div></th><th><div class="th-inner"><span class="th-label">Durum</span></div></th></tr></thead><tbody>
-    ${talepler.slice(-5).reverse().map(t=>`<tr><td><div class="cm">${t.musteri}</div><div class="cs">${t.bolge||''}</div></td><td class="pc">${para(t.butce,t.tip==='Kiralamak')}</td><td><span class="${bc(t.durum)}">${t.durum}</span></td></tr>`).join('')||`<tr><td colspan="3"><div class="empty"><i class="ti ti-inbox"></i><p>Henüz talep yok</p></div></td></tr>`}
+    <div><div class="dst">Son Talepler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colCustomer')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colBudget')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
+    ${talepler.slice(-5).reverse().map(t=>`<tr><td><div class="cm">${t.musteri}</div><div class="cs">${t.bolge||''}</div></td><td class="pc">${para(t.butce,t.tip===i18n('toRent'))}</td><td><span class="${bc(t.durum)}">${tv(t.durum)}</span></td></tr>`).join('')||`<tr><td colspan="3"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noRequests')}</p></div></td></tr>`}
     </tbody></table></div></div>
   </div>`;
 }
@@ -1138,7 +1180,7 @@ function renderPortfoy(c,ta){
     const deletable=canDelete();
     return `<tr data-row="1" data-baslik="${(p.baslik||'').toLowerCase()}" data-kategori="${(p.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-il="${(p.il||'').toLowerCase()}" data-ilce="${(p.ilce||'').toLowerCase()}" data-alan="${p.alan||p.brut||0}" data-fiyat="${p.fiyat||0}" data-portfoySahibi="${(p.musteriAd||'').toLowerCase()}" data-ilanSahibi="${ilanSahibi.toLowerCase()}" data-durum="${(p.durum||'').toLowerCase()}">
       <td><div class="cm">${p.baslik}</div><div class="cs">${p.adresDetay||''}</div></td>
-      <td><span class="${bc(p.kategori)}">${p.kategori}</span></td>
+      <td><span class="${bc(p.kategori)}">${tv(p.kategori)}</span></td>
       <td>${altTip?`<span class="${bc(altTip)}">${altTip}</span>`:'-'}</td>
       <td style="font-size:12px">${p.il||'-'}</td>
       <td style="font-size:12px">${p.ilce||'-'}</td>
@@ -1146,7 +1188,7 @@ function renderPortfoy(c,ta){
       <td class="pc">${para(p.fiyat,tipL===i18n('forRentOpt'))}</td>
       <td style="font-size:12px">${p.musteriAd||'-'}</td>
       <td style="font-size:12px"><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${ilanSahibi}</span></td>
-      <td><span class="${bc(p.durum)}">${p.durum}</span></td>
+      <td><span class="${bc(p.durum)}">${tv(p.durum)}</span></td>
       <td><div class="ar">
         ${editable?`<button class="ab" onclick="openModal('portfolio','${p._rid}')"><i class="ti ti-edit"></i></button>`:'<button class="ab" disabled><i class="ti ti-edit"></i></button>'}
         ${deletable?`<button class="ab del" onclick="delItem('portfolio','${p._rid}')"><i class="ti ti-trash"></i></button>`:''}
@@ -1174,14 +1216,14 @@ function renderTalepler(c,ta){
   let fil=[...talepler];
   if(tF==='Almak')fil=fil.filter(t=>t.tip==='Almak');
   if(tF==='Kiralamak')fil=fil.filter(t=>t.tip==='Kiralamak');
-  if(tF===i18n('residential'))fil=fil.filter(t=>t.kategori===i18n('residential'));
-  if(tF===i18n('land'))fil=fil.filter(t=>t.kategori===i18n('land'));
+  if(tF==='Konut')fil=fil.filter(t=>t.kategori==='Konut');
+  if(tF==='Arsa')fil=fil.filter(t=>t.kategori==='Arsa');
   if(tF==='Acil')fil=fil.filter(t=>t.durum==='Acil');
   const tid='tbl-t';initF(tid);
   c.innerHTML=`
-  <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${[i18n('allFilter'),'Almak','Kiralamak',i18n('residential'),i18n('land'),i18n('statusUrgent')].map(f=>`<button class="sfbtn${tF===f?' active':''}" onclick="setTF('${f}')">${f}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
+  <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${[{v:'Tümü',l:i18n('allFilter')},{v:'Almak',l:i18n('toBuy')},{v:'Kiralamak',l:i18n('toRent')},{v:'Konut',l:i18n('residential')},{v:'Arsa',l:i18n('land')},{v:'Acil',l:i18n('statusUrgent')}].map(f=>`<button class="sfbtn${tF===f.v?' active':''}" onclick="setTF('${f.v}')">${f.l}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'tip','Talep','80px')}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip','Alt Tip','100px')}${mTH(tid,'bolge',i18n('region'))}${mTH(tid,'butce',i18n('colBudget'))}${mTH(tid,'durum','Durum','85px')}${mTH(tid,'tarih','Tarih','90px')}${mTH(tid,'sorumlu',i18n('colResp'))}
+    ${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'tip',i18n('requestType'),'80px')}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'100px')}${mTH(tid,'bolge',i18n('region'))}${mTH(tid,'butce',i18n('colBudget'))}${mTH(tid,'durum',i18n('colStatus'),'85px')}${mTH(tid,'tarih',i18n('colDate'),'90px')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="10"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noRequestsFound')}</p></div></td></tr>`:''}
@@ -1190,10 +1232,10 @@ function renderTalepler(c,ta){
     const sorumlu=getUserName(t._uid);
     const editable=canEdit(t);
     return `<tr data-row="1" data-musteri="${(t.musteri||'').toLowerCase()}" data-tip="${(t.tip||'').toLowerCase()}" data-kategori="${(t.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-bolge="${(t.bolge||'').toLowerCase()}" data-butce="${t.butce||0}" data-durum="${(t.durum||'').toLowerCase()}" data-tarih="${t.tarih||''}" data-sorumlu="${sorumlu.toLowerCase()}">
-      <td class="cm">${t.musteri}</td><td><span class="${bc(t.tip)}">${t.tip}</span></td><td><span class="${bc(t.kategori)}">${t.kategori}</span></td>
+      <td class="cm">${t.musteri}</td><td><span class="${bc(t.tip)}">${tv(t.tip)}</span></td><td><span class="${bc(t.kategori)}">${tv(t.kategori)}</span></td>
       <td>${altTip?`<span class="${bc(altTip)}">${altTip}</span>`:'-'}</td>
-      <td style="font-size:12px">${t.bolge||'-'}</td><td class="pc">${para(t.butce,t.tip==='Kiralamak')}</td>
-      <td><span class="${bc(t.durum)}">${t.durum}</span></td><td style="font-size:12px;color:var(--tx2)">${t.tarih||'-'}</td>
+      <td style="font-size:12px">${t.bolge||'-'}</td><td class="pc">${para(t.butce,t.tip===i18n('toRent'))}</td>
+      <td><span class="${bc(t.durum)}">${tv(t.durum)}</span></td><td style="font-size:12px;color:var(--tx2)">${t.tarih||'-'}</td>
       <td style="font-size:12px"><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${sorumlu}</span></td>
       <td><div class="ar">
         ${editable?`<button class="ab" onclick="openModal('talep','${t._rid}')"><i class="ti ti-edit"></i></button>`:'<button class="ab" disabled><i class="ti ti-edit"></i></button>'}
@@ -1227,7 +1269,7 @@ function renderMusteriler(c,ta){
     return `<tr data-row="1" data-ad="${(m.ad||'').toLowerCase()}" data-tel="${m.tel||''}" data-email="${(m.email||'').toLowerCase()}" data-tip="${(m.tip||'').toLowerCase()}" data-not="${(m.not||'').toLowerCase()}" data-sorumlu="${sorumlu.toLowerCase()}">
       <td><div style="display:flex;align-items:center;gap:8px"><div class="av">${ini}</div><span class="cm">${m.ad}</span></div></td>
       <td style="font-size:12px">${m.tel||'-'}</td><td style="font-size:12px;color:var(--tx2)">${m.email||'-'}</td>
-      <td><span class="badge b-neu">${m.tip}</span></td><td style="font-size:12px;color:var(--tx2)">${m.not||'-'}</td>
+      <td><span class="badge b-neu">${tv(m.tip)}</span></td><td style="font-size:12px;color:var(--tx2)">${m.not||'-'}</td>
       <td><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${sorumlu}</span></td>
       <td><div class="ar">
         ${editable?`<button class="ab" onclick="openModal('musteri','${m._rid}')"><i class="ti ti-edit"></i></button>`:'<button class="ab" disabled><i class="ti ti-edit"></i></button>'}
@@ -1264,7 +1306,7 @@ function komCalc(liste){
     qGrow:pct(sum(liste.filter(k=>tQM.includes(k.tarih))),sum(liste.filter(k=>pQM.includes(k.tarih)))),
     yGrow:pct(sum(liste.filter(k=>k.tarih?.startsWith(ty))),sum(liste.filter(k=>k.tarih?.startsWith(py))))};
 }
-function gCard(label,val){const cls=val===null?'nt':(val>=0?'up':'dn');const ico=val===null?'ti-minus':(val>=0?'ti-trending-up':'ti-trending-down');const txt=val===null?'Veri yok':(val>=0?`+${val}%`:`${val}%`);return `<div class="gc ${cls}"><div class="gcl"><div class="gct">${label}</div><div class="gcv">${txt}</div></div><i class="ti ${ico} gci"></i></div>`;}
+function gCard(label,val){const cls=val===null?'nt':(val>=0?'up':'dn');const ico=val===null?'ti-minus':(val>=0?'ti-trending-up':'ti-trending-down');const txt=val===null?i18n('noData'):(val>=0?`+${val}%`:`${val}%`);return `<div class="gc ${cls}"><div class="gcl"><div class="gct">${label}</div><div class="gcv">${txt}</div></div><i class="ti ${ico} gci"></i></div>`;}
 
 function renderKomisyon(c,ta){
   ta.innerHTML=`<button class="btn-add" onclick="openModal('komisyon',null)"><i class="ti ti-plus"></i> ${i18n('addTransaction')}</button>
@@ -1285,9 +1327,9 @@ function renderKomisyon(c,ta){
     <div style="margin-bottom:18px">
       <div class="dst">Kullanıcı Bazlı Özet</div>
       <div class="tw"><table style="min-width:300px"><thead><tr>
-        <th><div class="th-inner"><span class="th-label">Kullanıcı</span></div></th>
-        <th><div class="th-inner"><span class="th-label">İşlem</span></div></th>
-        <th><div class="th-inner"><span class="th-label">Net Komisyon</span></div></th>
+        <th><div class="th-inner"><span class="th-label">${i18n('users')}</span></div></th>
+        <th><div class="th-inner"><span class="th-label">${i18n('colTrans')}</span></div></th>
+        <th><div class="th-inner"><span class="th-label">${i18n('netCommission')}</span></div></th>
       </tr></thead><tbody>
       ${Object.values(byUser).sort((a,b)=>b.net-a.net).map(u=>`<tr class="kom-user-row"><td style="font-size:12px">${u.name}</td><td style="font-size:12px;text-align:center">${u.count}</td><td class="pc">${para(u.net)}</td></tr>`).join('')}
       </tbody></table></div>
@@ -1296,16 +1338,16 @@ function renderKomisyon(c,ta){
 
   c.innerHTML=`
   <div class="sg" style="grid-template-columns:repeat(3,1fr)">
-    <div class="sc ac"><div class="sl"><i class="ti ti-calendar-month"></i> Bu Ay Net</div><div class="sv">${para(s.thisMonth)}</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-calendar"></i> Bu Yıl Net</div><div class="sv">${para(s.thisYear)}</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> Toplam</div><div class="sv">${para(s.total)}</div><div class="ss">${s.count} işlem</div></div>
+    <div class="sc ac"><div class="sl"><i class="ti ti-calendar-month"></i>${i18n('thisMonth')}</div><div class="sv">${para(s.thisMonth)}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-calendar"></i>${i18n('thisYear')}</div><div class="sv">${para(s.thisYear)}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-cash"></i>${i18n('total')}</div><div class="sv">${para(s.total)}</div><div class="ss">${s.count} ${i18n('transactions')}</div></div>
   </div>
   <div class="sg" style="grid-template-columns:repeat(3,1fr)">
-    <div class="sc"><div class="sl"><i class="ti ti-plus"></i> Toplam Ekleme</div><div class="sv">${para(s.topEk)}</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-minus"></i> Toplam İskonto</div><div class="sv" style="color:#991b1b">${para(s.topIs)}</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-calculator"></i> Net Fark</div><div class="sv" style="color:${s.topEk-s.topIs>=0?'#166534':'#991b1b'}">${para(s.topEk-s.topIs)}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-plus"></i>${i18n('totalAddition')}</div><div class="sv">${para(s.topEk)}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-minus"></i>${i18n('totalDiscount')}</div><div class="sv" style="color:#991b1b">${para(s.topIs)}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-calculator"></i>${i18n('netDiff')}</div><div class="sv" style="color:${s.topEk-s.topIs>=0?'#166534':'#991b1b'}">${para(s.topEk-s.topIs)}</div></div>
   </div>
-  <div class="grow-row">${gCard(i18n('monthlyGrowth'),s.mGrow)}${gCard('Quarter Büyüme',s.qGrow)}${gCard(i18n('yearlyGrowth'),s.yGrow)}</div>
+  <div class="grow-row">${gCard(i18n('monthlyGrowth'),s.mGrow)}${gCard(i18n('quarterGrowth'),s.qGrow)}${gCard(i18n('yearlyGrowth'),s.yGrow)}</div>
   <div class="chart-wrap"><div class="chart-title">Aylık Net Komisyon (Son 12 Ay)</div><div class="chart-canvas"><canvas id="komChart"></canvas></div></div>
   ${userSummaryHTML}
   <button class="coll-btn" id="cb" onclick="toggleColl()"><i class="ti ti-table"></i> Aylık Özet Tablo <span class="carr"><i class="ti ti-chevron-down"></i></span></button>
@@ -1318,7 +1360,7 @@ function renderKomisyon(c,ta){
     </div>
     <div id="year-table"></div>
   </div>
-  <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} işlem</span></div>
+  <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} i18n('transactions')</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
     ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip','Tip','75px')}${mTH(tid,'portfoy',i18n('portfolioLabel'))}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem',i18n('transAmount'))}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
@@ -1328,7 +1370,7 @@ function renderKomisyon(c,ta){
     const sorumlu=getUserName(k._uid);
     const editable=canEdit(k);
     return `<tr data-row="1" data-tarih="${k.tarih||''}" data-tip="${(k.tip||'').toLowerCase()}" data-portfoy="${(k.portfoyAd||'').toLowerCase()}" data-musteri="${(k.musteriAd||'').toLowerCase()}" data-islem="${k.islemTutari||0}" data-baz="${k.bazKomisyon||0}" data-ekleme="${k.ekleme||0}" data-iskonto="${k.iskonto||0}" data-net="${k.netKomisyon||0}" data-sorumlu="${sorumlu.toLowerCase()}">
-      <td style="font-size:12px">${k.tarih||'-'}</td><td><span class="${bc(k.tip)}">${k.tip}</span></td>
+      <td style="font-size:12px">${k.tarih||'-'}</td><td><span class="${bc(k.tip)}">${tv(k.tip)}</span></td>
       <td style="font-size:12px">${k.portfoyAd||'-'}</td><td style="font-size:12px">${k.musteriAd||'-'}</td>
       <td class="pc">${para(k.islemTutari)}</td><td style="font-size:12px">${para(k.bazKomisyon)}</td>
       <td style="font-size:12px;color:#166534">${parseInt(k.ekleme||0)>0?'+'+para(k.ekleme):'-'}</td>
@@ -1368,7 +1410,7 @@ function renderYT(){
   const months=['01','02','03','04','05','06','07','08','09','10','11','12'];
   const names=i18n('months');
   const rows=months.map((m,i)=>{const key=`${year}-${m}`;const ks=komisyonlar.filter(k=>k.tarih===key);const baz=ks.reduce((s,k)=>s+parseInt(k.bazKomisyon||0),0),ekl=ks.reduce((s,k)=>s+parseInt(k.ekleme||0),0),isk=ks.reduce((s,k)=>s+parseInt(k.iskonto||0),0),net=ks.reduce((s,k)=>s+parseInt(k.netKomisyon||0),0);return `<tr style="${ks.length===0?'opacity:0.4':''}"><td style="font-size:12px;font-weight:500">${names[i]}</td><td style="font-size:12px;text-align:center">${ks.length}</td><td style="font-size:12px;text-align:right">${para(baz)}</td><td style="font-size:12px;text-align:right;color:#166534">${ekl>0?para(ekl):'-'}</td><td style="font-size:12px;text-align:right;color:#991b1b">${isk>0?para(isk):'-'}</td><td style="font-size:12px;text-align:right;font-weight:600;color:var(--pr)">${para(net)}</td></tr>`;});
-  el('year-table').innerHTML=`<div class="tw"><table style="min-width:360px"><thead><tr><th><div class="th-inner"><span class="th-label">Ay</span></div></th><th><div class="th-inner"><span class="th-label">İşlem</span></div></th><th><div class="th-inner"><span class="th-label">Baz</span></div></th><th><div class="th-inner"><span class="th-label">Ekleme</span></div></th><th><div class="th-inner"><span class="th-label">İskonto</span></div></th><th><div class="th-inner"><span class="th-label">Net</span></div></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
+  el('year-table').innerHTML=`<div class="tw"><table style="min-width:360px"><thead><tr><th><div class="th-inner"><span class="th-label">Ay</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colTrans')}</span></div></th><th><div class="th-inner"><span class="th-label">Baz</span></div></th><th><div class="th-inner"><span class="th-label">Ekleme</span></div></th><th><div class="th-inner"><span class="th-label">İskonto</span></div></th><th><div class="th-inner"><span class="th-label">Net</span></div></th></tr></thead><tbody>${rows.join('')}</tbody></table></div>`;
 }
 
 // ── KULLANICILAR ───────────────────────────────────────
@@ -1390,10 +1432,10 @@ function renderKullanicilar(c,ta){
   const list=users.filter(u=>u.tenant_id===currentProfile.tenant_id);
   c.innerHTML=`
   <div class="tw"><table style="min-width:400px"><thead><tr>
-    <th><div class="th-inner"><span class="th-label">Kullanıcı</span></div></th>
+    <th><div class="th-inner"><span class="th-label">${i18n('users')}</span></div></th>
     <th><div class="th-inner"><span class="th-label">E-posta</span></div></th>
     <th><div class="th-inner"><span class="th-label">Rol</span></div></th>
-    <th><div class="th-inner"><span class="th-label">Durum</span></div></th>
+    <th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th>
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${list.length===0?`<tr><td colspan="5"><div class="empty"><i class="ti ti-users"></i><p>Kullanıcı yok</p></div></td></tr>`:''}
@@ -1569,7 +1611,7 @@ function openModal(type,rid){
       <div class="fg"><label>Tarih</label><input id="f_tarih" type="date" value="${item?item.tarih||'':new Date().toISOString().slice(0,10)}"></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Talep Tipi</label><select id="f_tip"><option${(!item||item.tip==='Almak')?' selected':''}>Almak</option><option${(item&&item.tip==='Kiralamak')?' selected':''}>Kiralamak</option></select></div>
+      <div class="fg"><label>Talep Tipi</label><select id="f_tip"><option${(!item||item.tip===i18n('toBuy'))?' selected':''}>Almak</option><option${(item&&item.tip===i18n('toRent'))?' selected':''}>Kiralamak</option></select></div>
       <div class="fg"><label>Kategori</label><select id="f_kat" onchange="tTK(this.value)"><option value=i18n('residential')${!isA?' selected':''}>Konut</option><option value=i18n('land')${isA?' selected':''}>Arsa</option></select></div>
     </div>
     <div id="tk"${isA?' class="hidden"':''}>
