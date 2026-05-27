@@ -1263,19 +1263,30 @@ function kAC(){
 function updatePortfoyList(tip, curVal=''){
   const sel=el('f_portfoy');
   if(!sel)return;
-  // Tüm olası durum değerlerini kabul et
   let filtered=[];
   if(tip==='Satış'){
-    filtered=portfolio.filter(p=>(p.tip==='Satılık')&&(p.durum==='Satıldı'||p.durum==='Aktif'||p.durum==='Başkası Sattı'||p.durum==='Satmaktan Vazgeçti'));
+    filtered=portfolio.filter(p=>p.tip==='Satılık');
   } else if(tip==='Kiralama'){
-    filtered=portfolio.filter(p=>(p.tip==='Kiralık')&&(p.durum==='Kiralandı'||p.durum==='Aktif'||p.durum==='Başkası Kiraladı'||p.durum==='Kiralamaktan Vazgeçti'));
+    filtered=portfolio.filter(p=>p.tip==='Kiralık');
+  } else {
+    filtered=[...portfolio];
+  }
+  const matchFound=filtered.some(p=>p.baslik===curVal);
+  let opts='<option value="">Portföy seçin…</option>';
+  // Eğer mevcut değer listede yoksa (eski kayıt), ekle
+  if(curVal&&!matchFound){
+    opts+=`<option value="${curVal}" selected>${curVal} (önceki kayıt)</option>`;
   }
   if(filtered.length===0){
-    sel.innerHTML='<option value="">Bu tipte portföy bulunamadı</option>';
-    return;
+    opts+='<option value="" disabled>Bu tipte portföy yok</option>';
+  } else {
+    opts+=filtered.map(p=>{
+      const durumLabel=p.durum&&p.durum!=='Aktif'?` (${p.durum})`:'';
+      const lokasyon=p.il||p.ilce?` — ${[p.il,p.ilce].filter(Boolean).join('/')}`:'' ;
+      return `<option value="${p.baslik}"${p.baslik===curVal?' selected':''}>${p.baslik}${durumLabel}${lokasyon}</option>`;
+    }).join('');
   }
-  sel.innerHTML='<option value="">Portföy seçin…</option>'+
-    filtered.map(p=>`<option value="${p.baslik}"${p.baslik===curVal?' selected':''}>${p.baslik}${p.durum&&p.durum!=='Aktif'?' ('+p.durum+')':''} — ${p.il||''} ${p.ilce||''}</option>`).join('');
+  sel.innerHTML=opts;
 }
 
 async function saveItem(){
