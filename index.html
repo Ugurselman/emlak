@@ -306,9 +306,9 @@ const LANGS = {
     thisMonth: 'Bu Ay Net', thisYear: 'Bu Yıl Net', total: 'Toplam',
     totalAddition: 'Toplam Ekleme', totalDiscount: 'Toplam İskonto', netDiff: 'Net Fark',
     monthlyGrowth: 'Aylık Büyüme', quarterGrowth: 'Quarter Büyüme', yearlyGrowth: 'Yıllık Büyüme',
-    noData: 'Veri yok', monthlyChart: 'Aylık Net Komisyon (Son 12 Ay)',
+    noData: 'Veri yok', monthlyChart: i18n('monthlyChart'),
     userBasedSummary: 'Kullanıcı Bazlı Özet', transactions: 'İşlem',
-    monthlySummary: 'Aylık Özet Tablo', year: 'Yıl',
+    monthlySummary: i18n('monthlySummary'), year: 'Yıl',
     months: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
     // Kullanıcılar
     inviteUser: 'Kullanıcı Davet Et', userAdded: 'Kullanıcı eklendi ✓',
@@ -1142,10 +1142,10 @@ function renderDash(c){
     <div class="sc"><div class="sl"><i class="ti ti-cash"></i> ${i18n('totalCommission')}</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' '+i18n('urgentRequests'):talepler.filter(t=>t.durum!=='Kapandı').length+' '+i18n('openRequests')}</div></div>
   </div>
   <div class="dg">
-    <div><div class="dst">Son Portföyler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colListing')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colPrice')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
+    <div><div class="dst">${i18n('recentPortfolio')}</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colListing')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colPrice')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
     ${portfolio.slice(-5).reverse().map(p=>`<tr><td><div class="cm">${p.baslik}</div><div class="cs">${p.il||''} ${p.ilce||''}</div></td><td class="pc">${para(p.fiyat,p.tip==='Kiralık')}</td><td><span class="${bc(p.durum)}">${tv(p.durum)}</span></td></tr>`).join('')||`<tr><td colspan="3"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListings')}</p></div></td></tr>`}
     </tbody></table></div></div>
-    <div><div class="dst">Son Talepler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colCustomer')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colBudget')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
+    <div><div class="dst">${i18n('recentRequests')}</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">${i18n('colCustomer')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colBudget')}</span></div></th><th><div class="th-inner"><span class="th-label">${i18n('colStatus')}</span></div></th></tr></thead><tbody>
     ${talepler.slice(-5).reverse().map(t=>`<tr><td><div class="cm">${t.musteri}</div><div class="cs">${t.bolge||''}</div></td><td class="pc">${para(t.butce,t.tip===i18n('toRent'))}</td><td><span class="${bc(t.durum)}">${tv(t.durum)}</span></td></tr>`).join('')||`<tr><td colspan="3"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noRequests')}</p></div></td></tr>`}
     </tbody></table></div></div>
   </div>`;
@@ -1167,7 +1167,7 @@ function renderPortfoy(c,ta){
     ${fBar(tid)}
   </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ${i18n('listing')}</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea'),'80px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'portfoySahibi',i18n('colOwner'))}${mTH(tid,'ilanSahibi',i18n('listingAgentLabel'))}${mTH(tid,'durum','Durum','100px')}
+    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea'),'80px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'portfoySahibi',i18n('colOwner'))}${mTH(tid,'ilanSahibi',i18n('listingAgentLabel'))}${mTH(tid,'durum',i18n('colStatus'),'100px')}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListingsFound')}</p></div></td></tr>`:''}
@@ -1202,11 +1202,11 @@ function excelPortfoy(){
   const tipL=ptab==='satilik'?'Satılık':'Kiralık';
   const fil=portfolio.filter(p=>p.tip===tipL);
   exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL===i18n('forRentOpt'))})),[
-    {key:'baslik',label:i18n('title')},{key:'kategori',label:'Kategori'},{key:'konutTip',label:'Konut Tipi'},{key:'nitelik',label:'Nitelik'},
-    {key:'il',label:i18n('province')},{key:'ilce',label:i18n('district')},{key:'adresDetay',label:'Adres'},
-    {key:'brut',label:'Brüt m²'},{key:'net',label:'Net m²'},{key:'alan',label:'Alan m²'},
-    {key:'fiyatFmt',label:'Fiyat'},{key:'musteriAd',label:i18n('portfolioOwnerLabel')},
-    {key:'ilanSahibi',label:i18n('listingAgentLabel')},{key:'durum',label:'Durum'},{key:'not',label:'Not'}
+    {key:'baslik',label:i18n('title')},{key:'kategori',label:i18n('colCategory')},{key:'konutTip',label:i18n('residentialType')},{key:'nitelik',label:i18n('landQuality')},
+    {key:'il',label:i18n('province')},{key:'ilce',label:i18n('district')},{key:'adresDetay',label:i18n('addressDetail')},
+    {key:'brut',label:i18n('gross')},{key:'net',label:i18n('net')},{key:'alan',label:'Alan m²'},
+    {key:'fiyatFmt',label:i18n('colPrice')},{key:'musteriAd',label:i18n('portfolioOwnerLabel')},
+    {key:'ilanSahibi',label:i18n('listingAgentLabel')},{key:'durum',label:i18n('colStatus')},{key:'not',label:i18n('colNote')}
   ],`${tipL}_portfoy`,'tbl-p');
 }
 
@@ -1247,10 +1247,10 @@ function renderTalepler(c,ta){
 }
 function excelTalepler(){
   exportExcel(talepler.map(t=>({...t,sorumlu:getUserName(t._uid)})),[
-    {key:'musteri',label:i18n('customer')},{key:'tip',label:'Talep'},{key:'kategori',label:'Kategori'},
-    {key:'konutTip',label:'Konut Tipi'},{key:'arsaNitelik',label:'Arsa Niteliği'},
+    {key:'musteri',label:i18n('customer')},{key:'tip',label:'Talep'},{key:'kategori',label:i18n('colCategory')},
+    {key:'konutTip',label:i18n('residentialType')},{key:'arsaNitelik',label:'Arsa Niteliği'},
     {key:'bolge',label:i18n('region')},{key:'butce',label:i18n('budget')},{key:'detay',label:'Detay'},
-    {key:'durum',label:'Durum'},{key:'tarih',label:'Tarih'},{key:'sorumlu',label:'Sorumlu'}
+    {key:'durum',label:i18n('colStatus')},{key:'tarih',label:i18n('colDate')},{key:'sorumlu',label:i18n('colResp')}
   ],'talepler','tbl-t');
 }
 
@@ -1260,7 +1260,7 @@ function renderMusteriler(c,ta){
   const tid='tbl-m';initF(tid);
   c.innerHTML=`
   <div class="sub-bar"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${musteriler.length} müşteri</span></div>
-  <div class="tw"><table id="${tid}"><thead><tr>${mTH(tid,'ad',i18n('colCustomer'))}${mTH(tid,'tel','Telefon','120px')}${mTH(tid,'email',i18n('colEmail'))}${mTH(tid,'tip','Tip','100px')}${mTH(tid,'not',i18n('colNote'))}${mTH(tid,'sorumlu',i18n('colResp'))}<th><div class="th-inner"><span class="th-label"></span></div></th></tr></thead><tbody>
+  <div class="tw"><table id="${tid}"><thead><tr>${mTH(tid,'ad',i18n('colCustomer'))}${mTH(tid,'tel',i18n('colPhone'),'120px')}${mTH(tid,'email',i18n('colEmail'))}${mTH(tid,'tip',i18n('colType'),'100px')}${mTH(tid,'not',i18n('colNote'))}${mTH(tid,'sorumlu',i18n('colResp'))}<th><div class="th-inner"><span class="th-label"></span></div></th></tr></thead><tbody>
   ${musteriler.length===0?`<tr><td colspan="7"><div class="empty"><i class="ti ti-users"></i><p>${i18n('noCustomersFound')}</p></div></td></tr>`:''}
   ${musteriler.map(m=>{
     const ini=m.ad.split(' ').map(w=>w[0]).slice(0,2).join('').toUpperCase();
@@ -1281,8 +1281,8 @@ function renderMusteriler(c,ta){
 }
 function excelMusteriler(){
   exportExcel(musteriler.map(m=>({...m,sorumlu:getUserName(m._uid)})),[
-    {key:'ad',label:'Ad'},{key:'tel',label:'Telefon'},{key:'email',label:'E-posta'},
-    {key:'tip',label:'Tip'},{key:'not',label:'Not'},{key:'sorumlu',label:'Sorumlu'}
+    {key:'ad',label:i18n('colCustomer')},{key:'tel',label:i18n('colPhone')},{key:'email',label:i18n('colEmail')},
+    {key:'tip',label:i18n('colType')},{key:'not',label:i18n('colNote')},{key:'sorumlu',label:i18n('colResp')}
   ],'musteriler','tbl-m');
 }
 
@@ -1325,7 +1325,7 @@ function renderKomisyon(c,ta){
     });
     userSummaryHTML=`
     <div style="margin-bottom:18px">
-      <div class="dst">Kullanıcı Bazlı Özet</div>
+      <div class="dst">${i18n('userBasedSummary')}</div>
       <div class="tw"><table style="min-width:300px"><thead><tr>
         <th><div class="th-inner"><span class="th-label">${i18n('users')}</span></div></th>
         <th><div class="th-inner"><span class="th-label">${i18n('colTrans')}</span></div></th>
@@ -1348,7 +1348,7 @@ function renderKomisyon(c,ta){
     <div class="sc"><div class="sl"><i class="ti ti-calculator"></i>${i18n('netDiff')}</div><div class="sv" style="color:${s.topEk-s.topIs>=0?'#166534':'#991b1b'}">${para(s.topEk-s.topIs)}</div></div>
   </div>
   <div class="grow-row">${gCard(i18n('monthlyGrowth'),s.mGrow)}${gCard(i18n('quarterGrowth'),s.qGrow)}${gCard(i18n('yearlyGrowth'),s.yGrow)}</div>
-  <div class="chart-wrap"><div class="chart-title">Aylık Net Komisyon (Son 12 Ay)</div><div class="chart-canvas"><canvas id="komChart"></canvas></div></div>
+  <div class="chart-wrap"><div class="chart-title">${i18n('monthlyChart')}</div><div class="chart-canvas"><canvas id="komChart"></canvas></div></div>
   ${userSummaryHTML}
   <button class="coll-btn" id="cb" onclick="toggleColl()"><i class="ti ti-table"></i> Aylık Özet Tablo <span class="carr"><i class="ti ti-chevron-down"></i></span></button>
   <div class="coll-body" id="cb-body">
@@ -1362,7 +1362,7 @@ function renderKomisyon(c,ta){
   </div>
   <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} i18n('transactions')</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip','Tip','75px')}${mTH(tid,'portfoy',i18n('portfolioLabel'))}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem',i18n('transAmount'))}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
+    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip',i18n('colType'),'75px')}${mTH(tid,'portfoy',i18n('portfolioLabel'))}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem',i18n('transAmount'))}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${komisyonlar.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-cash"></i><p>${i18n('noTransactionsFound')}</p></div></td></tr>`:''}
@@ -1387,11 +1387,11 @@ function renderKomisyon(c,ta){
 }
 function excelKomisyon(){
   exportExcel(komisyonlar.map(k=>({...k,sorumlu:getUserName(k._uid)})),[
-    {key:'tarih',label:'Tarih'},{key:'tip',label:'Tip'},{key:'portfoyAd',label:i18n('portfolioLabel')},
+    {key:'tarih',label:i18n('colDate')},{key:'tip',label:i18n('colType')},{key:'portfoyAd',label:i18n('portfolioLabel')},
     {key:'musteriAd',label:i18n('customer')},{key:'islemTutari',label:'İşlem Tutarı'},
-    {key:'bazKomisyon',label:'Baz Komisyon'},{key:'ekleme',label:'Ekleme'},
+    {key:'bazKomisyon',label:'Baz Komisyon'},{key:'ekleme',label:i18n('addition')},
     {key:'iskonto',label:i18n('discount')},{key:'netKomisyon',label:'Net Komisyon'},
-    {key:'sorumlu',label:'Sorumlu'},{key:'not',label:'Not'}
+    {key:'sorumlu',label:i18n('colResp')},{key:'not',label:i18n('colNote')}
   ],'komisyon','tbl-k');
 }
 
@@ -1401,7 +1401,7 @@ function buildChart(){
   for(let i=11;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);labels.push(i18n('months')[d.getMonth()]);}
   const data=months.map(m=>komisyonlar.filter(k=>k.tarih===m).reduce((s,k)=>s+parseInt(k.netKomisyon||0),0));
   if(chartInst)chartInst.destroy();
-  chartInst=new Chart(canvas,{type:'bar',data:{labels,datasets:[{type:'bar',label:'Net',data,backgroundColor:'rgba(26,82,118,0.15)',borderColor:'rgba(26,82,118,0.4)',borderWidth:1,borderRadius:4,order:2},{type:'line',label:'Trend',data,borderColor:'#1a5276',borderWidth:2,pointBackgroundColor:'#1a5276',pointRadius:3,tension:0.3,fill:false,order:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ₺'+parseInt(ctx.raw||0).toLocaleString('tr-TR')}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0f2f5'},ticks:{font:{size:10},callback:v=>'₺'+parseInt(v).toLocaleString('tr-TR')}}}}});
+  chartInst=new Chart(canvas,{type:'bar',data:{labels,datasets:[{type:'bar',label:i18n('colNet'),data,backgroundColor:'rgba(26,82,118,0.15)',borderColor:'rgba(26,82,118,0.4)',borderWidth:1,borderRadius:4,order:2},{type:'line',label:'Trend',data,borderColor:'#1a5276',borderWidth:2,pointBackgroundColor:'#1a5276',pointRadius:3,tension:0.3,fill:false,order:1}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' ₺'+parseInt(ctx.raw||0).toLocaleString('tr-TR')}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:'#f0f2f5'},ticks:{font:{size:10},callback:v=>'₺'+parseInt(v).toLocaleString('tr-TR')}}}}});
 }
 function toggleColl(){const btn=el('cb'),body=el('cb-body');btn.classList.toggle('open');body.classList.toggle('open');if(body.classList.contains('open'))renderYT();}
 function renderYT(){
