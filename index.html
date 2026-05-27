@@ -1350,7 +1350,7 @@ function renderKomisyon(c,ta){
   <div class="grow-row">${gCard(i18n('monthlyGrowth'),s.mGrow)}${gCard(i18n('quarterGrowth'),s.qGrow)}${gCard(i18n('yearlyGrowth'),s.yGrow)}</div>
   <div class="chart-wrap"><div class="chart-title">${i18n('monthlyChart')}</div><div class="chart-canvas"><canvas id="komChart"></canvas></div></div>
   ${userSummaryHTML}
-  <button class="coll-btn" id="cb" onclick="toggleColl()"><i class="ti ti-table"></i> Aylık Özet Tablo <span class="carr"><i class="ti ti-chevron-down"></i></span></button>
+  <button class="coll-btn" id="cb" onclick="toggleColl()"><i class="ti ti-table"></i> ${i18n('monthlySummary')} <span class="carr"><i class="ti ti-chevron-down"></i></span></button>
   <div class="coll-body" id="cb-body">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
       <label style="font-size:12px;color:var(--tx2)">Yıl:</label>
@@ -1360,9 +1360,9 @@ function renderKomisyon(c,ta){
     </div>
     <div id="year-table"></div>
   </div>
-  <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} i18n('transactions')</span></div>
+  <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} ${i18n('transactions')}</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip',i18n('colType'),'75px')}${mTH(tid,'portfoy',i18n('portfolioLabel'))}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem',i18n('transAmount'))}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
+    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip',i18n('colType'),'75px')}${mTH(tid,'portfoy',i18n('portfolioLabel'))}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem',i18n('transAmount'))}${mTH(tid,'baz',i18n('colBase'))}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net',i18n('colNet'))}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${komisyonlar.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-cash"></i><p>${i18n('noTransactionsFound')}</p></div></td></tr>`:''}
