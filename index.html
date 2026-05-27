@@ -1223,7 +1223,26 @@ function openModal(type,rid){
   const ov=document.createElement('div');
   ov.className='overlay';ov.id='modal-overlay';
   ov.addEventListener('click',e=>{if(e.target===ov)closeModal();});
-  ov.innerHTML=`<div class="modal"><div class="mh"><h3>${title}</h3><button class="mx" onclick="closeModal()"><i class="ti ti-x"></i></button></div><div class="mb">${body}</div><div class="mf"><button class="bc" onclick="closeModal()">İptal</button><button class="bs" id="save-btn" onclick="saveItem()">Kaydet</button></div></div>`;
+  
+  const modalDiv=document.createElement('div');
+  modalDiv.className='modal';
+  
+  const mh=document.createElement('div');
+  mh.className='mh';
+  mh.innerHTML=`<h3>${title}</h3><button class="mx" onclick="closeModal()"><i class="ti ti-x"></i></button>`;
+  
+  const mb=document.createElement('div');
+  mb.className='mb';
+  mb.innerHTML=body;
+  
+  const mf=document.createElement('div');
+  mf.className='mf';
+  mf.innerHTML=`<button class="bc" onclick="closeModal()">İptal</button><button class="bs" id="save-btn" onclick="saveItem()">Kaydet</button>`;
+  
+  modalDiv.appendChild(mh);
+  modalDiv.appendChild(mb);
+  modalDiv.appendChild(mf);
+  ov.appendChild(modalDiv);
   document.body.appendChild(ov);
   if(type==='portfolio'&&item?.il)setTimeout(()=>ilceDoldur('f_il','f_ilce',item.ilce||''),10);
   if(type==='komisyon'){
