@@ -653,7 +653,7 @@ function setLang(lang) {
 // ── STATE ──────────────────────────────────────────────
 let currentUser=null,currentProfile=null,currentTenant=null;
 let portfolio=[],talepler=[],musteriler=[],komisyonlar=[],tenants=[],users=[];
-let tab='dashboard',ptab='satilik',subF='Tümü',tF='Tümü',showOnlyMine=false;
+let tab='dashboard',ptab='satilik',subF=i18n('allFilter'),tF=i18n('allFilter'),showOnlyMine=false;
 let modalType=null,editId=null,tableFilters={},chartInst=null;
 
 // ── ROL SABİTLERİ ──────────────────────────────────────
@@ -699,8 +699,8 @@ function bc(val){
 function rolLabel(r){return ROLES[r]||r;}
 function durumOpts(tip,cur){
   const opts=tip==='Kiralık'
-    ?['Aktif','Kiralandı','Başkası Kiraladı','Kiralamaktan Vazgeçti']
-    :['Aktif','Satıldı','Başkası Sattı','Satmaktan Vazgeçti'];
+    ?[i18n('statusActive'),i18n('statusRented'),i18n('statusRentedByOther'),i18n('statusWithdrawnRent')]
+    :[i18n('statusActive'),i18n('statusSold'),i18n('statusSoldByOther'),i18n('statusWithdrawnSale')];
   return opts.map(o=>`<option${o===cur?' selected':''}>${o}</option>`).join('');
 }
 function ilceDoldur(ilId,ilceId,secili=''){
@@ -808,13 +808,13 @@ function renderForgot(){
 async function doLogin(){
   const btn=el('asub');if(btn){btn.disabled=true;btn.textContent=i18n('loggingIn');}
   const{error}=await sb.auth.signInWithPassword({email:sv('a_email'),password:sv('a_pass')});
-  if(error)renderAuth('login',error.message==='Invalid login credentials'?'E-posta veya şifre hatalı':error.message);
+  if(error)renderAuth('login',error.message==='Invalid login credentials'?i18n('invalidCredentials'):error.message);
 }
 async function doRegister(){
   const btn=el('asub');if(btn){btn.disabled=true;btn.textContent=i18n('registering');}
   const name=sv('a_name'),company=sv('a_company'),email=sv('a_email'),pass=sv('a_pass');
-  if(!name||!company||!email||!pass){renderAuth('register','Tüm alanları doldurun');return;}
-  if(pass.length<6){renderAuth('register','Şifre en az 6 karakter');return;}
+  if(!name||!company||!email||!pass){renderAuth('register',i18n('allFieldsRequired'));return;}
+  if(pass.length<6){renderAuth('register',i18n('passwordMin'));return;}
   const{data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
   if(error){renderAuth('register',error.message);return;}
   if(data.user){
@@ -1059,7 +1059,7 @@ function fBar(tid){return `<div class="filter-info" id="fc-${tid}" style="displa
 
 // ── NAVİGASYON ─────────────────────────────────────────
 function setTab(t){
-  tab=t;subF='Tümü';tF='Tümü';showOnlyMine=false;closeSidebar();
+  tab=t;subF=i18n('allFilter');tF=i18n('allFilter');showOnlyMine=false;closeSidebar();
   document.querySelectorAll('.ni').forEach(e=>e.classList.toggle('active',e.getAttribute('onclick')?.includes(`'${t}'`)));
   const isP=(t==='satilik'||t==='kiralik');
   if(el('mtabs'))el('mtabs').style.display=isP?'flex':'none';
@@ -1069,7 +1069,7 @@ function setTab(t){
   if(el('ts'))el('ts').textContent=meta[t]?.[1]||'';
   render();
 }
-function setPTab(pt){ptab=pt;subF='Tümü';showOnlyMine=false;el('tab-sat')?.classList.toggle('active',pt==='satilik');el('tab-kir')?.classList.toggle('active',pt==='kiralik');render();}
+function setPTab(pt){ptab=pt;subF=i18n('allFilter');showOnlyMine=false;el('tab-sat')?.classList.toggle('active',pt==='satilik');el('tab-kir')?.classList.toggle('active',pt==='kiralik');render();}
 function setSF(f){subF=f;render();}
 function setTF(f){tF=f;render();}
 function toggleMine(){showOnlyMine=!showOnlyMine;render();}
@@ -1095,9 +1095,9 @@ function renderDash(c){
   c.innerHTML=`
   <div class="sg">
     <div class="sc ac"><div class="sl"><i class="ti ti-home"></i> Portföy</div><div class="sv">${portfolio.length}</div><div class="ss">${aktif} aktif</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-tag"></i>${i18n('forSale')}</div><div class="sv">${sat.length}</div><div class="ss">${sat.filter(p=>p.kategori===i18n('residential')).length} konut · ${sat.filter(p=>p.kategori===i18n('land')).length} arsa</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-key"></i>${i18n('forRent')}</div><div class="sv">${kir.length}</div><div class="ss">${kir.filter(p=>p.kategori===i18n('residential')).length} konut · ${kir.filter(p=>p.kategori===i18n('land')).length} arsa</div></div>
-    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> Top. Komisyon</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' acil talep':talepler.filter(t=>t.durum!=='Kapandı').length+' açık talep'}</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-tag"></i>${i18n('forSale')}</div><div class="sv">${sat.length}</div><div class="ss">${sat.filter(p=>p.kategori==='Konut').length} konut · ${sat.filter(p=>p.kategori==='Arsa').length} arsa</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-key"></i>${i18n('forRent')}</div><div class="sv">${kir.length}</div><div class="ss">${kir.filter(p=>p.kategori==='Konut').length} konut · ${kir.filter(p=>p.kategori==='Arsa').length} arsa</div></div>
+    <div class="sc"><div class="sl"><i class="ti ti-cash"></i> Top. Komisyon</div><div class="sv">${para(topK)}</div><div class="ss">${acil>0?acil+' acil talep':talepler.filter(t=>t.durum!==i18n('statusClosed')).length+' açık talep'}</div></div>
   </div>
   <div class="dg">
     <div><div class="dst">Son Portföyler</div><div class="tw"><table style="min-width:300px"><thead><tr><th><div class="th-inner"><span class="th-label">İlan</span></div></th><th><div class="th-inner"><span class="th-label">Fiyat</span></div></th><th><div class="th-inner"><span class="th-label">Durum</span></div></th></tr></thead><tbody>
@@ -1110,12 +1110,12 @@ function renderDash(c){
 }
 
 function renderPortfoy(c,ta){
-  const tipL=ptab==='satilik'?'Satılık':'Kiralık';
+  const tipL=ptab==='satilik'?i18n('forSaleOpt'):i18n('forRentOpt');
   ta.innerHTML=`<button class="btn-add" onclick="openModal('portfolio',null)"><i class="ti ti-plus"></i> ${i18n('addListing')}</button>
   ${canExcel()?`<button class="btn-excel" onclick="excelPortfoy()"><i class="ti ti-file-spreadsheet"></i> ${i18n('excel')}</button>`:''}`;
   let fil=portfolio.filter(p=>p.tip===tipL);
-  if(subF===i18n('residential'))fil=fil.filter(p=>p.kategori===i18n('residential'));
-  if(subF===i18n('land'))fil=fil.filter(p=>p.kategori===i18n('land'));
+  if(subF==='Konut')fil=fil.filter(p=>p.kategori==='Konut');
+  if(subF==='Arsa')fil=fil.filter(p=>p.kategori==='Arsa');
   if(showOnlyMine)fil=fil.filter(p=>p._uid===currentUser.id);
   const tid='tbl-p';initF(tid);
   c.innerHTML=`
@@ -1125,12 +1125,12 @@ function renderPortfoy(c,ta){
     ${fBar(tid)}
   </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ${i18n('listing')}</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea'),'80px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'portfoySahibi',i18n('colOwner'))}${mTH(tid,'ilanSahibi','İlan Sorumlusu')}${mTH(tid,'durum','Durum','100px')}
+    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea'),'80px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'portfoySahibi',i18n('colOwner'))}${mTH(tid,'ilanSahibi',i18n('listingAgentLabel'))}${mTH(tid,'durum','Durum','100px')}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListingsFound')}</p></div></td></tr>`:''}
   ${fil.map(p=>{
-    const isA=p.kategori===i18n('land');
+    const isA=p.kategori==='Arsa';
     const altTip=isA?(p.nitelik||i18n('land')):(p.konutTip||'');
     const alanStr=isA?(p.alan&&p.alan!='0'?p.alan+' m²':'-'):(p.brut&&p.brut!='0'?`B:${p.brut} N:${p.net||'-'}`:'-');
     const ilanSahibi=getUserName(p._uid);
@@ -1143,7 +1143,7 @@ function renderPortfoy(c,ta){
       <td style="font-size:12px">${p.il||'-'}</td>
       <td style="font-size:12px">${p.ilce||'-'}</td>
       <td style="font-size:12px">${alanStr}</td>
-      <td class="pc">${para(p.fiyat,tipL==='Kiralık')}</td>
+      <td class="pc">${para(p.fiyat,tipL===i18n('forRentOpt'))}</td>
       <td style="font-size:12px">${p.musteriAd||'-'}</td>
       <td style="font-size:12px"><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${ilanSahibi}</span></td>
       <td><span class="${bc(p.durum)}">${p.durum}</span></td>
@@ -1157,14 +1157,14 @@ function renderPortfoy(c,ta){
 }
 
 function excelPortfoy(){
-  const tipL=ptab==='satilik'?'Satılık':'Kiralık';
+  const tipL=ptab==='satilik'?i18n('forSaleOpt'):i18n('forRentOpt');
   const fil=portfolio.filter(p=>p.tip===tipL);
-  exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL==='Kiralık')})),[
-    {key:'baslik',label:'Başlık'},{key:'kategori',label:'Kategori'},{key:'konutTip',label:'Konut Tipi'},{key:'nitelik',label:'Nitelik'},
-    {key:'il',label:'İl'},{key:'ilce',label:'İlçe'},{key:'adresDetay',label:'Adres'},
+  exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL===i18n('forRentOpt'))})),[
+    {key:'baslik',label:i18n('title')},{key:'kategori',label:'Kategori'},{key:'konutTip',label:'Konut Tipi'},{key:'nitelik',label:'Nitelik'},
+    {key:'il',label:i18n('province')},{key:'ilce',label:i18n('district')},{key:'adresDetay',label:'Adres'},
     {key:'brut',label:'Brüt m²'},{key:'net',label:'Net m²'},{key:'alan',label:'Alan m²'},
-    {key:'fiyatFmt',label:'Fiyat'},{key:'musteriAd',label:'Portföy Sahibi'},
-    {key:'ilanSahibi',label:'İlan Sorumlusu'},{key:'durum',label:'Durum'},{key:'not',label:'Not'}
+    {key:'fiyatFmt',label:'Fiyat'},{key:'musteriAd',label:i18n('portfolioOwnerLabel')},
+    {key:'ilanSahibi',label:i18n('listingAgentLabel')},{key:'durum',label:'Durum'},{key:'not',label:'Not'}
   ],`${tipL}_portfoy`,'tbl-p');
 }
 
@@ -1179,7 +1179,7 @@ function renderTalepler(c,ta){
   if(tF==='Acil')fil=fil.filter(t=>t.durum==='Acil');
   const tid='tbl-t';initF(tid);
   c.innerHTML=`
-  <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${['Tümü','Almak','Kiralamak',i18n('residential'),i18n('land'),'Acil'].map(f=>`<button class="sfbtn${tF===f?' active':''}" onclick="setTF('${f}')">${f}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
+  <div class="sub-bar"><div class="sub-left"><div style="display:flex;gap:5px;flex-wrap:wrap">${[i18n('allFilter'),'Almak','Kiralamak',i18n('residential'),i18n('land'),i18n('statusUrgent')].map(f=>`<button class="sfbtn${tF===f?' active':''}" onclick="setTF('${f}')">${f}</button>`).join('')}</div>${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${fil.length} talep</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
     ${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'tip','Talep','80px')}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip','Alt Tip','100px')}${mTH(tid,'bolge',i18n('region'))}${mTH(tid,'butce',i18n('colBudget'))}${mTH(tid,'durum','Durum','85px')}${mTH(tid,'tarih','Tarih','90px')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
@@ -1205,9 +1205,9 @@ function renderTalepler(c,ta){
 }
 function excelTalepler(){
   exportExcel(talepler.map(t=>({...t,sorumlu:getUserName(t._uid)})),[
-    {key:'musteri',label:'Müşteri'},{key:'tip',label:'Talep'},{key:'kategori',label:'Kategori'},
+    {key:'musteri',label:i18n('customer')},{key:'tip',label:'Talep'},{key:'kategori',label:'Kategori'},
     {key:'konutTip',label:'Konut Tipi'},{key:'arsaNitelik',label:'Arsa Niteliği'},
-    {key:'bolge',label:'Bölge'},{key:'butce',label:'Bütçe'},{key:'detay',label:'Detay'},
+    {key:'bolge',label:i18n('region')},{key:'butce',label:i18n('budget')},{key:'detay',label:'Detay'},
     {key:'durum',label:'Durum'},{key:'tarih',label:'Tarih'},{key:'sorumlu',label:'Sorumlu'}
   ],'talepler','tbl-t');
 }
@@ -1320,7 +1320,7 @@ function renderKomisyon(c,ta){
   </div>
   <div class="sub-bar" style="margin-top:18px"><div class="sub-left">${fBar(tid)}</div><span style="font-size:12px;color:var(--tx3)">${komisyonlar.length} işlem</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip','Tip','75px')}${mTH(tid,'portfoy','Portföy')}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem','İşlem Tut.')}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
+    ${mTH(tid,'tarih',i18n('colDate'),'80px')}${mTH(tid,'tip','Tip','75px')}${mTH(tid,'portfoy',i18n('portfolioLabel'))}${mTH(tid,'musteri',i18n('colCustomer'))}${mTH(tid,'islem',i18n('transAmount'))}${mTH(tid,'baz','Baz')}${mTH(tid,'ekleme',i18n('colAdd'))}${mTH(tid,'iskonto',i18n('colDiscount'))}${mTH(tid,'net','Net')}${mTH(tid,'sorumlu',i18n('colResp'))}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${komisyonlar.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-cash"></i><p>${i18n('noTransactionsFound')}</p></div></td></tr>`:''}
@@ -1345,10 +1345,10 @@ function renderKomisyon(c,ta){
 }
 function excelKomisyon(){
   exportExcel(komisyonlar.map(k=>({...k,sorumlu:getUserName(k._uid)})),[
-    {key:'tarih',label:'Tarih'},{key:'tip',label:'Tip'},{key:'portfoyAd',label:'Portföy'},
-    {key:'musteriAd',label:'Müşteri'},{key:'islemTutari',label:'İşlem Tutarı'},
+    {key:'tarih',label:'Tarih'},{key:'tip',label:'Tip'},{key:'portfoyAd',label:i18n('portfolioLabel')},
+    {key:'musteriAd',label:i18n('customer')},{key:'islemTutari',label:'İşlem Tutarı'},
     {key:'bazKomisyon',label:'Baz Komisyon'},{key:'ekleme',label:'Ekleme'},
-    {key:'iskonto',label:'İskonto'},{key:'netKomisyon',label:'Net Komisyon'},
+    {key:'iskonto',label:i18n('discount')},{key:'netKomisyon',label:'Net Komisyon'},
     {key:'sorumlu',label:'Sorumlu'},{key:'not',label:'Not'}
   ],'komisyon','tbl-k');
 }
@@ -1406,10 +1406,10 @@ function renderKullanicilar(c,ta){
       </div></td>
       <td style="font-size:12px;color:var(--tx2)">${u.email||'-'}</td>
       <td><span class="${bc(u.role)}">${rolLabel(u.role)}</span></td>
-      <td><span class="badge ${u.is_active?'b-akt':'b-kap'}">${u.is_active?'Aktif':'Pasif'}</span></td>
+      <td><span class="badge ${u.is_active?'b-akt':'b-kap'}">${u.is_active?i18n('statusActive'):'Pasif'}</span></td>
       <td><div class="ar">
         ${!isMe?`<button class="ab" onclick="openModal('rol','${u.id}')" title="Rol Değiştir"><i class="ti ti-shield"></i></button>
-        <button class="ab del" onclick="toggleUser('${u.id}',${u.is_active})" title="${u.is_active?'Pasifleştir':'Aktifleştir'}"><i class="ti ti-${u.is_active?'user-off':'user-check'}"></i></button>`:''}
+        <button class="ab del" onclick="toggleUser('${u.id}',${u.is_active})" title="${u.is_active?i18n('deactivate'):i18n('activate')}"><i class="ti ti-${u.is_active?'user-off':'user-check'}"></i></button>`:''}
       </div></td>
     </tr>`;}).join('')}
   </tbody></table></div>`;
@@ -1432,7 +1432,7 @@ function renderSirketler(c,ta){
     return `<div class="tenant-card">
       <div class="tenant-info" style="flex:1">
         <h3>${t.name}</h3>
-        <p>${brokerUser?.full_name||'Broker yok'} · <span style="color:${tUsers.length>=maxU?'#991b1b':'#166534'};font-weight:500">${tUsers.length}/${maxU} kullanıcı</span> · <span class="badge ${t.is_active?'b-akt':'b-kap'}" style="font-size:10px">${t.is_active?'Aktif':'Pasif'}</span></p>
+        <p>${brokerUser?.full_name||'Broker yok'} · <span style="color:${tUsers.length>=maxU?'#991b1b':'#166534'};font-weight:500">${tUsers.length}/${maxU} kullanıcı</span> · <span class="badge ${t.is_active?'b-akt':'b-kap'}" style="font-size:10px">${t.is_active?i18n('statusActive'):'Pasif'}</span></p>
         <div style="margin-top:5px;height:4px;background:var(--bd);border-radius:2px;width:150px"><div style="height:4px;background:${tUsers.length>=maxU?'#991b1b':'#1a5276'};border-radius:2px;width:${Math.min(pct,100)}%"></div></div>
       </div>
       <div style="display:flex;gap:5px;align-items:center">
@@ -1482,14 +1482,14 @@ function openModal(type,rid){
     if(type==='sirket')item=tenants.find(t=>t.id===rid);
   }
   let body='',title='';
-  const ptabTip=ptab==='satilik'?'Satılık':'Kiralık';
+  const ptabTip=ptab==='satilik'?i18n('forSaleOpt'):i18n('forRentOpt');
 
   // İlan sahibi seçim alanı (broker/asistan için liste, danışman için kendi adı)
   const tenantUsers=users.filter(u=>u.tenant_id===currentProfile.tenant_id&&u.is_active);
   const ownerField=()=>{
     if(canAssignUser()&&currentProfile.role!=='danisman'){
       const curOwnerUid=item?item._uid:currentUser.id;
-      return `<div class="fg"><label>İlan Sorumlusu <span style="color:#991b1b">*</span></label>
+      return `<div class="fg"><label>${i18n('listingAgentLabel')} <span style="color:#991b1b">*</span></label>
         <select id="f_owner">
           ${tenantUsers.map(u=>`<option value="${u.id}"${u.id===curOwnerUid?' selected':''}>${u.full_name||u.email} (${rolLabel(u.role)})</option>`).join('')}
         </select></div>`;
@@ -1499,7 +1499,7 @@ function openModal(type,rid){
   };
 
   if(type==='portfolio'){
-    title=item?'İlanı Düzenle':'Yeni İlan';
+    title=item?i18n('editListing'):i18n('newListing');
     const kat=item?item.kategori:i18n('residential');const isA=kat===i18n('land');
     const tip=item?item.tip:ptabTip;
     const ilOpts=Object.keys(ILLER).sort().map(il=>`<option${il===(item?.il||'')?' selected':''}>${il}</option>`).join('');
@@ -1510,7 +1510,7 @@ function openModal(type,rid){
       <div class="fg"><label>Tip</label><select id="f_tip" onchange="updDurumOpts()"><option${tip==='Satılık'?' selected':''}>Satılık</option><option${tip==='Kiralık'?' selected':''}>Kiralık</option></select></div>
       <div class="fg"><label>Kategori</label><select id="f_kat" onchange="mTK(this.value)"><option value=i18n('residential')${!isA?' selected':''}>Konut</option><option value=i18n('land')${isA?' selected':''}>Arsa</option></select></div>
     </div>
-    <div class="fg"><label>Başlık</label><input id="f_baslik" value="${item?item.baslik||'':''}" placeholder="İlan başlığı"></div>
+    <div class="fg"><label>${i18n('title')}</label><input id="f_baslik" value="${item?item.baslik||'':''}" placeholder="İlan başlığı"></div>
     <div class="fdiv">Konum</div>
     <div class="fr">
       <div class="fg"><label>İl</label><select id="f_il" onchange="ilceDoldur('f_il','f_ilce')"><option value="">İl seçin</option>${ilOpts}</select></div>
@@ -1525,29 +1525,29 @@ function openModal(type,rid){
         <div class="fg"><label>Alan (m²)</label><input id="f_alan_k" type="number" value="${item?item.alanK||'':''}" placeholder="0"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Konut Tipi</label><select id="f_kt"><option${(!item||item.konutTip==='Daire')?' selected':''}>Daire</option><option${(item&&item.konutTip==='Villa')?' selected':''}>Villa</option><option${(item&&item.konutTip==='Müstakil Ev')?' selected':''}>Müstakil Ev</option></select></div>
-        <div class="fg"><label>Durum</label><select id="f_durum_k">${durumOpts(tip,item?.durum||'Aktif')}</select></div>
+        <div class="fg"><label>Konut Tipi</label><select id="f_kt"><option${(!item||item.konutTip===i18n('apartment'))?' selected':''}>Daire</option><option${(item&&item.konutTip===i18n('villa'))?' selected':''}>Villa</option><option${(item&&item.konutTip===i18n('detached'))?' selected':''}>Müstakil Ev</option></select></div>
+        <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_k">${durumOpts(tip,item?.durum||i18n('statusActive'))}</select></div>
       </div>
     </div>
     <div id="sa"${!isA?' class="hidden"':''}>
       <div class="fdiv">Arsa</div>
       <div class="fr">
-        <div class="fg"><label>Nitelik</label><select id="f_nitelik" onchange="mTN(this.value)"><option${(!item||item.nitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.nitelik==='Tarla')?' selected':''}>Tarla</option><option${(item&&item.nitelik==='Köyiçi İmar')?' selected':''}>Köyiçi İmar</option><option${(item&&item.nitelik==='Diğer')?' selected':''}>Diğer</option></select></div>
+        <div class="fg"><label>Nitelik</label><select id="f_nitelik" onchange="mTN(this.value)"><option${(!item||item.nitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.nitelik===i18n('qualityField'))?' selected':''}>Tarla</option><option${(item&&item.nitelik===i18n('qualityVillage'))?' selected':''}>Köyiçi İmar</option><option${(item&&item.nitelik===i18n('qualityOther'))?' selected':''}>Diğer</option></select></div>
         <div class="fg"><label>Alan (m²)</label><input id="f_alan_a" type="number" value="${item?item.alan||'':''}" placeholder="0"></div>
       </div>
-      <div class="fg${(item&&item.nitelik==='Diğer')?'':' hidden'}" id="sna"><label>Nitelik Açıklaması</label><input id="f_na" value="${item?item.nitelikAciklama||'':''}" placeholder="Açıklayın…"></div>
+      <div class="fg${(item&&item.nitelik===i18n('qualityOther'))?'':' hidden'}" id="sna"><label>Nitelik Açıklaması</label><input id="f_na" value="${item?item.nitelikAciklama||'':''}" placeholder="Açıklayın…"></div>
       <div class="fr">
         <div class="fg"><label>Mahalle</label><input id="f_mahalle" value="${item?item.mahalle||'':''}" placeholder="Mahalle"></div>
         <div class="fg"><label>Ada No</label><input id="f_ada" value="${item?item.ada||'':''}" placeholder="Ada"></div>
       </div>
       <div class="fr">
         <div class="fg"><label>Parsel No</label><input id="f_parsel" value="${item?item.parsel||'':''}" placeholder="Parsel"></div>
-        <div class="fg"><label>Durum</label><select id="f_durum_a">${durumOpts(tip,item?.durum||'Aktif')}</select></div>
+        <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_a">${durumOpts(tip,item?.durum||i18n('statusActive'))}</select></div>
       </div>
     </div>
     <div class="fdiv">Portföy Sahibi & Fiyat</div>
     <div class="fr">
-      <div class="fg"><label>Portföy Sahibi (Müşteri)</label>
+      <div class="fg"><label>${i18n('portfolioOwnerLabel')}</label>
         <div class="ac-wrap">
           <input id="f_mi" autocomplete="off" value="${item?item.musteriAd||'':''}" placeholder="Yazın veya listeden seçin…" oninput="acS(this.value)" onfocus="acS(this.value)">
           <input type="hidden" id="f_mid" value="${item?item.musteriId||'':''}">
@@ -1557,15 +1557,15 @@ function openModal(type,rid){
       <div class="fg"><label>Fiyat (₺)</label><input id="f_fiyat" value="${item?fmtFiyat(item.fiyat):''}" placeholder="0" oninput="this.value=fmtFiyat(this.value)"></div>
     </div>
     ${ownerField()}
-    <div class="fg"><label>Not</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>`;
+    <div class="fg"><label>${i18n('noteLabel')}</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>`;
   }
 
   if(type==='talep'){
-    title=item?'Talebi Düzenle':'Yeni Talep';
+    title=item?i18n('editRequest'):i18n('newRequest');
     const kat=item?item.kategori:i18n('residential');const isA=kat===i18n('land');
     body=`
     <div class="fr">
-      <div class="fg"><label>Müşteri</label><input id="f_musteri" value="${item?item.musteri||'':''}" placeholder="Ad Soyad"></div>
+      <div class="fg"><label>${i18n('customer')}</label><input id="f_musteri" value="${item?item.musteri||'':''}" placeholder="Ad Soyad"></div>
       <div class="fg"><label>Tarih</label><input id="f_tarih" type="date" value="${item?item.tarih||'':new Date().toISOString().slice(0,10)}"></div>
     </div>
     <div class="fr">
@@ -1573,68 +1573,68 @@ function openModal(type,rid){
       <div class="fg"><label>Kategori</label><select id="f_kat" onchange="tTK(this.value)"><option value=i18n('residential')${!isA?' selected':''}>Konut</option><option value=i18n('land')${isA?' selected':''}>Arsa</option></select></div>
     </div>
     <div id="tk"${isA?' class="hidden"':''}>
-      <div class="fg"><label>Konut Tipi</label><select id="f_kt"><option${(!item||item.konutTip==='Daire')?' selected':''}>Daire</option><option${(item&&item.konutTip==='Villa')?' selected':''}>Villa</option><option${(item&&item.konutTip==='Müstakil Ev')?' selected':''}>Müstakil Ev</option></select></div>
+      <div class="fg"><label>Konut Tipi</label><select id="f_kt"><option${(!item||item.konutTip===i18n('apartment'))?' selected':''}>Daire</option><option${(item&&item.konutTip===i18n('villa'))?' selected':''}>Villa</option><option${(item&&item.konutTip===i18n('detached'))?' selected':''}>Müstakil Ev</option></select></div>
     </div>
     <div id="ta2"${!isA?' class="hidden"':''}>
-      <div class="fg"><label>Arsa Niteliği</label><select id="f_an" onchange="tTN(this.value)"><option${(!item||item.arsaNitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.arsaNitelik==='Tarla')?' selected':''}>Tarla</option><option${(item&&item.arsaNitelik==='Köyiçi İmarlı')?' selected':''}>Köyiçi İmarlı</option><option${(item&&item.arsaNitelik==='Diğer')?' selected':''}>Diğer</option></select></div>
+      <div class="fg"><label>Arsa Niteliği</label><select id="f_an" onchange="tTN(this.value)"><option${(!item||item.arsaNitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.arsaNitelik===i18n('qualityField'))?' selected':''}>Tarla</option><option${(item&&item.arsaNitelik==='Köyiçi İmarlı')?' selected':''}>Köyiçi İmarlı</option><option${(item&&item.arsaNitelik===i18n('qualityOther'))?' selected':''}>Diğer</option></select></div>
       <div class="fg hidden" id="taa"><label>Açıklama</label><input id="f_ana" value="${item?item.arsaNitelikAciklama||'':''}" placeholder="Açıklayın…"></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Bölge</label><input id="f_bolge" value="${item?item.bolge||'':''}" placeholder="Örn: Karşıyaka"></div>
+      <div class="fg"><label>${i18n('region')}</label><input id="f_bolge" value="${item?item.bolge||'':''}" placeholder="Örn: Karşıyaka"></div>
       <div class="fg"><label>Bütçe (₺)</label><input id="f_butce" value="${item?fmtFiyat(item.butce):''}" placeholder="0" oninput="this.value=fmtFiyat(this.value)"></div>
     </div>
     <div class="fg"><label>Detay</label><textarea id="f_detay">${item?item.detay||'':''}</textarea></div>
-    <div class="fg"><label>Durum</label><select id="f_durum"><option${(!item||item.durum==='Aktif')?' selected':''}>Aktif</option><option${(item&&item.durum==='Acil')?' selected':''}>Acil</option><option${(item&&item.durum==='Beklemede')?' selected':''}>Beklemede</option><option${(item&&item.durum==='Kapandı')?' selected':''}>Kapandı</option></select></div>
+    <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum"><option${(!item||item.durum==='Aktif')?' selected':''}>Aktif</option><option${(item&&item.durum==='Acil')?' selected':''}>Acil</option><option${(item&&item.durum==='Beklemede')?' selected':''}>Beklemede</option><option${(item&&item.durum==='Kapandı')?' selected':''}>Kapandı</option></select></div>
     ${ownerField()}`;
   }
 
   if(type==='musteri'){
-    title=item?'Müşteriyi Düzenle':'Yeni Müşteri';
+    title=item?i18n('editCustomer'):i18n('newCustomer');
     body=`
     <div class="fr">
       <div class="fg"><label>Ad / Şirket</label><input id="f_ad" value="${item?item.ad||'':''}" placeholder="Ad Soyad"></div>
-      <div class="fg"><label>Tip</label><select id="f_tip"><option${(!item||item.tip==='Alıcı')?' selected':''}>Alıcı</option><option${(item&&item.tip==='Satıcı')?' selected':''}>Satıcı</option><option${(item&&item.tip==='Kiracı')?' selected':''}>Kiracı</option><option${(item&&item.tip==='Kiraya Veren')?' selected':''}>Kiraya Veren</option><option${(item&&item.tip==='Kurumsal')?' selected':''}>Kurumsal</option></select></div>
+      <div class="fg"><label>Tip</label><select id="f_tip"><option${(!item||item.tip===i18n('buyer'))?' selected':''}>Alıcı</option><option${(item&&item.tip===i18n('seller'))?' selected':''}>Satıcı</option><option${(item&&item.tip===i18n('tenant'))?' selected':''}>Kiracı</option><option${(item&&item.tip===i18n('landlord'))?' selected':''}>Kiraya Veren</option><option${(item&&item.tip===i18n('corporate'))?' selected':''}>Kurumsal</option></select></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Telefon</label><input id="f_tel" value="${item?item.tel||'':''}" placeholder="0532 000 00 00"></div>
+      <div class="fg"><label>${i18n('phone')}</label><input id="f_tel" value="${item?item.tel||'':''}" placeholder="0532 000 00 00"></div>
       <div class="fg"><label>E-posta</label><input id="f_email" value="${item?item.email||'':''}" placeholder="mail@ornek.com"></div>
     </div>
-    <div class="fg"><label>Not</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>`;
+    <div class="fg"><label>${i18n('noteLabel')}</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>`;
   }
 
   if(type==='komisyon'){
-    title=item?'İşlemi Düzenle':'Yeni İşlem';
+    title=item?i18n('editTransaction'):i18n('newTransaction');
     body=`
     <div class="fr">
-      <div class="fg"><label>Tarih (Yıl-Ay)</label><input id="f_tarih" type="month" value="${item?item.tarih||'':new Date().toISOString().slice(0,7)}"></div>
-      <div class="fg"><label>Tip</label><select id="f_tip" onchange="updatePortfoyList(this.value,'')"><option${(!item||item.tip==='Satış')?' selected':''}>Satış</option><option${(item&&item.tip==='Kiralama')?' selected':''}>Kiralama</option></select></div>
+      <div class="fg"><label>${i18n('monthYear')}</label><input id="f_tarih" type="month" value="${item?item.tarih||'':new Date().toISOString().slice(0,7)}"></div>
+      <div class="fg"><label>Tip</label><select id="f_tip" onchange="updatePortfoyList(this.value,'')"><option${(!item||item.tip===i18n('sale'))?' selected':''}>Satış</option><option${(item&&item.tip===i18n('rental'))?' selected':''}>Kiralama</option></select></div>
     </div>
     <div class="fg"><label>Portföy <span style="color:#991b1b">*</span></label>
       <input id="f_portfoy" list="portfoy-list" placeholder="Portföy seçin veya yazın…" autocomplete="off" required>
       <datalist id="portfoy-list"></datalist>
     </div>
-      <div class="fg"><label>Müşteri</label><input id="f_musteri" value="${item?item.musteriAd||'':''}" placeholder="Müşteri adı"></div>
+      <div class="fg"><label>${i18n('customer')}</label><input id="f_musteri" value="${item?item.musteriAd||'':''}" placeholder="Müşteri adı"></div>
     </div>
     <div class="fdiv">Tutar</div>
     <div class="fr">
-      <div class="fg"><label>İşlem Tutarı (₺)</label><input id="f_islem" value="${item?fmtFiyat(item.islemTutari):''}" placeholder="0" oninput="this.value=fmtFiyat(this.value);kAC()"></div>
+      <div class="fg"><label>${i18n('transAmount')}</label><input id="f_islem" value="${item?fmtFiyat(item.islemTutari):''}" placeholder="0" oninput="this.value=fmtFiyat(this.value);kAC()"></div>
       <div class="fg"><label id="f_baz_label">Baz Kom. (%2 / 1 kira)</label><input id="f_baz" readonly style="background:var(--sf2);color:var(--tx2)" value="${item?fmtFiyat(item.bazKomisyon):''}"></div>
     </div>
     <div class="fr">
-      <div class="fg"><label>Ekleme (₺)</label><input id="f_ekleme" value="${item?fmtFiyat(item.ekleme||'0'):'0'}" oninput="this.value=fmtFiyat(this.value);kAC()"></div>
-      <div class="fg"><label>İskonto (₺)</label><input id="f_iskonto" value="${item?fmtFiyat(item.iskonto||'0'):'0'}" oninput="this.value=fmtFiyat(this.value);kAC()"></div>
+      <div class="fg"><label>${i18n('addition')}</label><input id="f_ekleme" value="${item?fmtFiyat(item.ekleme||'0'):'0'}" oninput="this.value=fmtFiyat(this.value);kAC()"></div>
+      <div class="fg"><label>${i18n('discount')}</label><input id="f_iskonto" value="${item?fmtFiyat(item.iskonto||'0'):'0'}" oninput="this.value=fmtFiyat(this.value);kAC()"></div>
     </div>
-    <div class="fg"><label>Net Komisyon (₺)</label><input id="f_netk" style="font-weight:600;color:var(--pr)" value="${item?fmtFiyat(item.netKomisyon):''}"></div>
-    <div class="fg"><label>Not</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>
+    <div class="fg"><label>${i18n('netCommission')}</label><input id="f_netk" style="font-weight:600;color:var(--pr)" value="${item?fmtFiyat(item.netKomisyon):''}"></div>
+    <div class="fg"><label>${i18n('noteLabel')}</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>
     ${ownerField()}`;
   }
 
   if(type==='davet'){
     title=i18n('inviteUser');
     body=`
-    <div class="fg"><label>Ad Soyad</label><input id="f_ad" placeholder="Kullanıcının adı soyadı"></div>
+    <div class="fg"><label>${i18n('userNameLabel')}</label><input id="f_ad" placeholder="Kullanıcının adı soyadı"></div>
     <div class="fg"><label>E-posta <span style="color:#991b1b">*</span></label><input id="f_email" type="email" placeholder="mail@ornek.com"></div>
-    <div class="fg"><label>Rol</label><select id="f_rol">
+    <div class="fg"><label>${i18n('roleLabel')}</label><select id="f_rol">
       <option value="danisman">Gayrimenkul Danışmanı</option>
       <option value="asistan">Asistan</option>
       <option value="broker">Broker</option>
@@ -1645,10 +1645,10 @@ function openModal(type,rid){
   }
 
   if(type==='rol'){
-    title='Rol Değiştir';
+    title=i18n('changeRole');
     body=`
     <p style="font-size:13px;margin-bottom:12px"><strong>${item?.full_name||'Kullanıcı'}</strong> için yeni rol seçin:</p>
-    <div class="fg"><label>Rol</label><select id="f_rol">
+    <div class="fg"><label>${i18n('roleLabel')}</label><select id="f_rol">
       <option value="danisman"${item?.role==='danisman'?' selected':''}>Gayrimenkul Danışmanı</option>
       <option value="asistan"${item?.role==='asistan'?' selected':''}>Asistan</option>
       <option value="broker"${item?.role==='broker'?' selected':''}>Broker</option>
@@ -1661,13 +1661,13 @@ function openModal(type,rid){
     const sirketUserCount=item?users.filter(u=>u.tenant_id===item.id).length:0;
     body=`
     <div class="fg"><label>Şirket / Ofis Adı</label><input id="f_sirket" value="${item?item.name||'':''}" placeholder="Şirket adı"></div>
-    <div class="fg"><label>Kullanıcı Limiti</label>
+    <div class="fg"><label>${i18n('userLimit')}</label>
       <select id="f_maxusers">
         ${[1,2,3,5,10,15,20,50].map(n=>`<option value="${n}"${(item?.max_users||1)==n?' selected':''}>${n} kullanıcı</option>`).join('')}
       </select>
       ${item?`<div style="font-size:11px;color:var(--tx2);margin-top:3px">Şu an ${sirketUserCount} aktif kullanıcı var</div>`:''}
     </div>
-    <div class="fg"><label>Durum</label>
+    <div class="fg"><label>${i18n('statusLabel2')}</label>
       <select id="f_aktif">
         <option value="true"${(!item||item.is_active!==false)?' selected':''}>Aktif</option>
         <option value="false"${(item&&item.is_active===false)?' selected':''}>Pasif</option>
@@ -1675,8 +1675,8 @@ function openModal(type,rid){
     </div>
     ${!item?`
     <div class="fdiv" style="margin-top:4px">Broker Bilgileri</div>
-    <div class="fg"><label>Broker Adı</label><input id="f_ad" placeholder="Ad Soyad"></div>
-    <div class="fg"><label>Broker E-posta</label><input id="f_email" type="email" placeholder="broker@sirket.com"></div>
+    <div class="fg"><label>${i18n('brokerName')}</label><input id="f_ad" placeholder="Ad Soyad"></div>
+    <div class="fg"><label>${i18n('brokerEmail')}</label><input id="f_email" type="email" placeholder="broker@sirket.com"></div>
     <div style="background:#f0f9ff;border:1px solid #bae6fd;border-radius:8px;padding:10px;font-size:12px;color:#0369a1;margin-top:4px">
       <i class="ti ti-send"></i> Broker'a davet maili gönderilecek.
     </div>`:''}
@@ -1710,7 +1710,7 @@ function openModal(type,rid){
   if(type==='portfolio'&&item?.il)setTimeout(()=>ilceDoldur('f_il','f_ilce',item.ilce||''),10);
   if(type==='komisyon'){
     if(item?.islemTutari)setTimeout(kAC,10);
-    const initTip=item?item.tip:'Satış';
+    const initTip=item?item.tip:i18n('sale');
     setTimeout(()=>updatePortfoyList(initTip,item?.portfoyAd||''),20);
   }
   document.addEventListener('click',acOut);
@@ -1720,13 +1720,13 @@ function closeModal(){const e=el('modal-overlay');if(e)e.remove();modalType=null
 function updDurumOpts(){
   const tip=sv('f_tip');
   const sk=el('f_durum_k');const sa=el('f_durum_a');
-  if(sk)sk.innerHTML=durumOpts(tip,'Aktif');
-  if(sa)sa.innerHTML=durumOpts(tip,'Aktif');
+  if(sk)sk.innerHTML=durumOpts(tip,i18n('statusActive'));
+  if(sa)sa.innerHTML=durumOpts(tip,i18n('statusActive'));
 }
 function mTK(v){const isA=v===i18n('land');el('sk')?.classList.toggle('hidden',isA);el('sa')?.classList.toggle('hidden',!isA);}
-function mTN(v){el('sna')?.classList.toggle('hidden',v!=='Diğer');}
+function mTN(v){el('sna')?.classList.toggle('hidden',v!==i18n('qualityOther'));}
 function tTK(v){const isA=v===i18n('land');el('tk')?.classList.toggle('hidden',isA);el('ta2')?.classList.toggle('hidden',!isA);}
-function tTN(v){el('taa')?.classList.toggle('hidden',v!=='Diğer');}
+function tTN(v){el('taa')?.classList.toggle('hidden',v!==i18n('qualityOther'));}
 function acS(q){const l=el('acl');if(!l)return;if(!q){l.style.display='none';return;}const fil=musteriler.filter(m=>m.ad.toLowerCase().includes(q.toLowerCase())||(m.tel||'').includes(q));if(!fil.length){l.style.display='none';return;}l.innerHTML=fil.map(m=>`<div class="ac-item" onclick="acSel('${m._rid}','${m.ad.replace(/'/g,"\\'")}')"><div class="ac-name">${m.ad}</div><div class="ac-tel">${m.tel||''}</div></div>`).join('');l.style.display='block';}
 function acSel(rid,ad){const i=el('f_mi'),h=el('f_mid'),l=el('acl');if(i)i.value=ad;if(h)h.value=rid;if(l)l.style.display='none';}
 function acOut(e){const l=el('acl');if(l&&!l.contains(e.target)&&e.target.id!=='f_mi')l.style.display='none';}
@@ -1734,7 +1734,7 @@ function kAC(){
   const t=parseInt(parseFiyat(el('f_islem')?.value||'0'));
   const tip=sv('f_tip');
   // Kiralama: kira tutarı kadar komisyon, Satış: %2
-  const baz=tip==='Kiralama'?t:Math.round(t*0.02);
+  const baz=tip===i18n('rental')?t:Math.round(t*0.02);
   const ek=parseInt(parseFiyat(el('f_ekleme')?.value||'0'));
   const is=parseInt(parseFiyat(el('f_iskonto')?.value||'0'));
   if(el('f_baz'))el('f_baz').value=fmtFiyat(baz);
@@ -1750,15 +1750,15 @@ function updatePortfoyList(tip, curVal=''){
   // Mevcut değeri koru
   if(curVal)inp.value=curVal;
   let filtered=[];
-  if(tip==='Satış'){
+  if(tip===i18n('sale')){
     filtered=portfolio.filter(p=>p.tip==='Satılık');
-  } else if(tip==='Kiralama'){
+  } else if(tip===i18n('rental')){
     filtered=portfolio.filter(p=>p.tip==='Kiralık');
   } else {
     filtered=[...portfolio];
   }
   dl.innerHTML=filtered.map(p=>{
-    const durumLabel=p.durum&&p.durum!=='Aktif'?` (${p.durum})`:'';
+    const durumLabel=p.durum&&p.durum!==i18n('statusActive')?` (${p.durum})`:'';
     const lokasyon=p.il||p.ilce?` — ${[p.il,p.ilce].filter(Boolean).join('/')}`:'' ;
     return `<option value="${p.baslik}">${p.baslik}${durumLabel}${lokasyon}</option>`;
   }).join('');
@@ -1792,7 +1792,7 @@ async function saveItem(){
       }
     }
     else if(modalType==='talep'){
-      if(!sv('f_musteri')){alert('Müşteri adı zorunlu');return;}
+      if(!sv('f_musteri')){alert(i18n('customerRequired'));return;}
       const kat=sv('f_kat');const isA=kat===i18n('land');
       const obj={musteri:sv('f_musteri'),tarih:sv('f_tarih'),tip:sv('f_tip'),kategori:kat,konutTip:isA?'':sv('f_kt'),arsaNitelik:isA?sv('f_an'):'',arsaNitelikAciklama:isA?sv('f_ana'):'',bolge:sv('f_bolge'),butce:parseFiyat(sv('f_butce')),detay:sv('f_detay'),durum:sv('f_durum')};
       if(editId){
@@ -1809,11 +1809,11 @@ async function saveItem(){
     }
     else if(modalType==='komisyon'){
       const islemRaw=parseFiyat(sv('f_islem'));
-      if(!islemRaw){alert('İşlem tutarı zorunlu');return;}
+      if(!islemRaw){alert(i18n('amountRequired'));return;}
       const portfoyVal=sv('f_portfoy');
-      if(!portfoyVal){alert('Portföy adı zorunludur');return;}
+      if(!portfoyVal){alert(i18n('portfolioRequired'));return;}
       const tipKom=sv('f_tip');
-      const baz=tipKom==='Kiralama'?parseInt(islemRaw):Math.round(parseInt(islemRaw)*0.02);
+      const baz=tipKom===i18n('rental')?parseInt(islemRaw):Math.round(parseInt(islemRaw)*0.02);
       const ek=parseInt(parseFiyat(sv('f_ekleme'))||0);
       const is=parseInt(parseFiyat(sv('f_iskonto'))||0);
       // Portföy adından il/ilçe bilgisini al
@@ -1856,7 +1856,7 @@ async function saveItem(){
         }
       });
       if(magicErr){alert('Davet maili gönderilemedi: '+magicErr.message);return;}
-      toast('Davet maili gönderildi ✓');
+      toast(i18n('userAdded'));
     }
     else if(modalType==='rol'){
       const newRol=sv('f_rol');
@@ -1879,7 +1879,7 @@ async function saveItem(){
       } else {
         // Yeni şirket
         const adName=sv('f_ad'),email=sv('f_email');
-        if(!email){alert('Broker e-postası zorunlu');return;}
+        if(!email){alert(i18n('brokerEmailRequired'));return;}
         const{data:ten,error:tenErr}=await sb.from('tenants').insert({name:sName,max_users:maxUsers,is_active:isAktif}).select().single();
         if(tenErr){alert('Şirket oluşturulamadı: '+tenErr.message);return;}
         const{error:invErr}=await sb.from('invitations').insert({email,full_name:adName,role:'broker',tenant_id:ten.id,created_by:currentUser.id});
@@ -1919,7 +1919,7 @@ async function initSession(session){
   const{data:profiles}=await sb.from('profiles').select('*').eq('id',currentUser.id);
   const profile=profiles&&profiles.length>0?profiles[0]:null;
   if(!profile){renderAuth('login','Hesabınız henüz yapılandırılmamış. Yöneticinizle iletişime geçin.');return;}
-  if(profile.is_active===false){renderAuth('login','Hesabınız pasifleştirilmiş.');return;}
+  if(profile.is_active===false){renderAuth('login',i18n('accountPassive'));return;}
   // Superadmin için tenant_id yoksa varsayılan ata
   if(!profile.tenant_id&&profile.role==='superadmin'){profile.tenant_id='00000000-0000-0000-0000-000000000001';}
   if(!profile.tenant_id){renderAuth('login','Hesabınız henüz yapılandırılmamış. Yöneticinizle iletişime geçin.');return;}
@@ -1987,7 +1987,7 @@ async function initSession(session){
       }
       if(profile.is_active===false){
         await sb.auth.signOut();
-        renderAuth('login','Hesabınız pasifleştirilmiş.');
+        renderAuth('login',i18n('accountPassive'));
         return;
       }
       // Superadmin için tenant_id yoksa varsayılan ata
