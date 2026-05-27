@@ -306,9 +306,9 @@ const LANGS = {
     thisMonth: 'Bu Ay Net', thisYear: 'Bu Yıl Net', total: 'Toplam',
     totalAddition: 'Toplam Ekleme', totalDiscount: 'Toplam İskonto', netDiff: 'Net Fark',
     monthlyGrowth: 'Aylık Büyüme', quarterGrowth: 'Quarter Büyüme', yearlyGrowth: 'Yıllık Büyüme',
-    noData: 'Veri yok', monthlyChart: i18n('monthlyChart'),
+    noData: 'Veri yok', monthlyChart: 'Aylık Net Komisyon (Son 12 Ay)',
     userBasedSummary: 'Kullanıcı Bazlı Özet', transactions: 'İşlem',
-    monthlySummary: i18n('monthlySummary'), year: 'Yıl',
+    monthlySummary: 'Aylık Özet Tablo', year: 'Yıl',
     months: ['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'],
     // Kullanıcılar
     inviteUser: 'Kullanıcı Davet Et', userAdded: 'Kullanıcı eklendi ✓',
@@ -1185,7 +1185,7 @@ function renderPortfoy(c,ta){
       <td style="font-size:12px">${p.il||'-'}</td>
       <td style="font-size:12px">${p.ilce||'-'}</td>
       <td style="font-size:12px">${alanStr}</td>
-      <td class="pc">${para(p.fiyat,tipL===i18n('forRentOpt'))}</td>
+      <td class="pc">${para(p.fiyat,tipL==='Kiralık')}</td>
       <td style="font-size:12px">${p.musteriAd||'-'}</td>
       <td style="font-size:12px"><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${ilanSahibi}</span></td>
       <td><span class="${bc(p.durum)}">${tv(p.durum)}</span></td>
@@ -1201,7 +1201,7 @@ function renderPortfoy(c,ta){
 function excelPortfoy(){
   const tipL=ptab==='satilik'?'Satılık':'Kiralık';
   const fil=portfolio.filter(p=>p.tip===tipL);
-  exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL===i18n('forRentOpt'))})),[
+  exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL==='Kiralık')})),[
     {key:'baslik',label:i18n('title')},{key:'kategori',label:i18n('colCategory')},{key:'konutTip',label:i18n('residentialType')},{key:'nitelik',label:i18n('landQuality')},
     {key:'il',label:i18n('province')},{key:'ilce',label:i18n('district')},{key:'adresDetay',label:i18n('addressDetail')},
     {key:'brut',label:i18n('gross')},{key:'net',label:i18n('net')},{key:'alan',label:'Alan m²'},
