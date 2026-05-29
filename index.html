@@ -793,7 +793,9 @@ async function loadData(){
 
 async function dbInsert(tbl,data,ownerUid=null){
   const uid=ownerUid||currentUser.id;
-  const{data:row,error}=await sb.from(tbl).insert({tenant_id:currentProfile.tenant_id,user_id:uid,data}).select().single();
+  const insertPromise=sb.from(tbl).insert({tenant_id:currentProfile.tenant_id,user_id:uid,data}).select('id,user_id').single();
+  const timeout=new Promise((_,rej)=>setTimeout(()=>rej(new Error('Bağlantı zaman aşımı (15s) — Supabase yanıt vermedi')),15000));
+  const{data:row,error}=await Promise.race([insertPromise,timeout]);
   if(error)throw error;
   return {...data,_rid:row.id,_uid:uid};
 }
