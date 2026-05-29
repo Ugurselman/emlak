@@ -785,7 +785,7 @@ async function loadData(){
     } else {
       const{data:usrData,error:usrErr}=await sb.from('profiles').select('*').eq('tenant_id',tid);
       if(usrErr)console.error('users error:',usrErr);
-      users=usrData||[];
+      users=(usrData||[]).map(u=>u.id===currentUser.id?{...u,email:u.email||currentUser.email}:u);
       console.log('Loaded users:',users.length,'for tenant:',tid);
     }
   }catch(e){console.error('loadData',e);}
@@ -914,7 +914,8 @@ async function doInviteRegister(){
         tenant_id:invite.tenant_id,
         full_name:name,
         role:invite.role,
-        is_active:true
+        is_active:true,
+        email:email
       });
       if(profErr){
         el('i_err').innerHTML=`<div class="auth-err">Hesap oluşturulamadı: ${profErr.message}</div>`;
@@ -1960,7 +1961,7 @@ async function initSession(session){
     const{data:inv}=await sb.from('invitations').select('*').eq('email',currentUser.email).order('created_at',{ascending:false}).limit(1);
     if(inv&&inv.length>0){
       const invite=inv[0];
-      const{error:pErr}=await sb.from('profiles').upsert({id:currentUser.id,tenant_id:invite.tenant_id,full_name:profile?.full_name||invite.full_name||'',role:invite.role,is_active:true});
+      const{error:pErr}=await sb.from('profiles').upsert({id:currentUser.id,tenant_id:invite.tenant_id,full_name:profile?.full_name||invite.full_name||'',role:invite.role,is_active:true,email:currentUser.email});
       if(!pErr){
         if(!invite.used_at)await sb.from('invitations').update({used_at:new Date().toISOString()}).eq('id',invite.id);
         const{data:p2}=await sb.from('profiles').select('*').eq('id',currentUser.id);
