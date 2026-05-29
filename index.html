@@ -1,4 +1,4 @@
-<!DOCTYPE html><!-- v2.1 -->
+<!DOCTYPE html><!-- v2.2 -->
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
@@ -355,6 +355,7 @@ const LANGS = {
     noRequestsFound: 'Talep bulunamadı', noCustomersFound: 'Müşteri bulunamadı',
     noTransactionsFound: 'İşlem yok',
     filtersActive: 'filtre aktif',
+    ownerPriceSection: 'Portföy Sahibi & Fiyat', perMonth: '/ay',
   },
   en: {
     appName: 'Real Estate Office', appDesc: 'Professional Real Estate Management System',
@@ -492,6 +493,7 @@ const LANGS = {
     noRequestsFound: 'No requests found', noCustomersFound: 'No customers found',
     noTransactionsFound: 'No transactions',
     filtersActive: 'filters active',
+    ownerPriceSection: 'Owner & Price', perMonth: '/mo',
   },
   ru: {
     appName: 'Агентство Недвижимости', appDesc: 'Профессиональная Система Управления',
@@ -629,6 +631,7 @@ const LANGS = {
     noRequestsFound: 'Запросы не найдены', noCustomersFound: 'Клиенты не найдены',
     noTransactionsFound: 'Нет сделок',
     filtersActive: 'фильтров активно',
+    ownerPriceSection: 'Владелец и Цена', perMonth: '/мес',
   }
 };
 
@@ -695,7 +698,7 @@ function setLang(lang) {
 // ── STATE ──────────────────────────────────────────────
 let currentUser=null,currentProfile=null,currentTenant=null;
 let portfolio=[],talepler=[],musteriler=[],komisyonlar=[],tenants=[],users=[];
-let tab='dashboard',ptab='satilik',subF=i18n('allFilter'),tF=i18n('allFilter'),showOnlyMine=false;
+let tab='dashboard',ptab='satilik',subF='Tümü',tF='Tümü',showOnlyMine=false;
 let modalType=null,editId=null,tableFilters={},chartInst=null;
 
 // ── ROL SABİTLERİ ──────────────────────────────────────
@@ -720,7 +723,7 @@ const el=id=>document.getElementById(id);
 const sv=id=>{const e=el(id);return e?e.value.trim():'';}
 function toast(msg,icon='ti-check'){el('tmsg').textContent=msg;const t=el('toast');t.querySelector('i').className='ti '+icon;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2600);}
 function syncBar(msg,err=false){const b=el('sync-bar');b.textContent=msg;b.className='sync-bar show'+(err?' err':'');setTimeout(()=>b.classList.remove('show'),2500);}
-function para(v,isKira=false){return '₺'+parseInt(v||0).toLocaleString('tr-TR')+(isKira?'/ay':'');}
+function para(v,isKira=false){return '₺'+parseInt(v||0).toLocaleString('tr-TR')+(isKira?i18n('perMonth'):'');}
 function fmtFiyat(v){if(!v)return '';const n=parseInt(String(v).replace(/\D/g,''));return isNaN(n)?'':n.toLocaleString('tr-TR');}
 function parseFiyat(v){return String(v).replace(/\./g,'').replace(/,/g,'');}
 
@@ -741,9 +744,9 @@ function bc(val){
 function rolLabel(r){return ROLES[r]||r;}
 function durumOpts(tip,cur){
   const opts=tip==='Kiralık'
-    ?[i18n('statusActive'),i18n('statusRented'),i18n('statusRentedByOther'),i18n('statusWithdrawnRent')]
-    :[i18n('statusActive'),i18n('statusSold'),i18n('statusSoldByOther'),i18n('statusWithdrawnSale')];
-  return opts.map(o=>`<option${o===cur?' selected':''}>${o}</option>`).join('');
+    ?['Aktif','Kiralandı','Başkası Kiraladı','Kiralamaktan Vazgeçti']
+    :['Aktif','Satıldı','Başkası Sattı','Satmaktan Vazgeçti'];
+  return opts.map(o=>`<option value="${o}"${o===cur?' selected':''}>${tv(o)}</option>`).join('');
 }
 function ilceDoldur(ilId,ilceId,secili=''){
   const sel=el(ilceId);if(!sel)return;
@@ -1101,7 +1104,7 @@ function fBar(tid){return `<div class="filter-info" id="fc-${tid}" style="displa
 
 // ── NAVİGASYON ─────────────────────────────────────────
 function setTab(t){
-  tab=t;subF=i18n('allFilter');tF=i18n('allFilter');showOnlyMine=false;closeSidebar();
+  tab=t;subF='Tümü';tF='Tümü';showOnlyMine=false;closeSidebar();
   document.querySelectorAll('.ni').forEach(e=>e.classList.toggle('active',e.getAttribute('onclick')?.includes(`'${t}'`)));
   const isP=(t==='satilik'||t==='kiralik');
   if(el('mtabs'))el('mtabs').style.display=isP?'flex':'none';
@@ -1111,7 +1114,7 @@ function setTab(t){
   if(el('ts'))el('ts').textContent=meta[t]?.[1]||'';
   render();
 }
-function setPTab(pt){ptab=pt;subF=i18n('allFilter');showOnlyMine=false;el('tab-sat')?.classList.toggle('active',pt==='satilik');el('tab-kir')?.classList.toggle('active',pt==='kiralik');render();}
+function setPTab(pt){ptab=pt;subF='Tümü';showOnlyMine=false;el('tab-sat')?.classList.toggle('active',pt==='satilik');el('tab-kir')?.classList.toggle('active',pt==='kiralik');render();}
 function setSF(f){subF=f;render();}
 function setTF(f){tF=f;render();}
 function toggleMine(){showOnlyMine=!showOnlyMine;render();}
@@ -1162,7 +1165,7 @@ function renderPortfoy(c,ta){
   const tid='tbl-p';initF(tid);
   c.innerHTML=`
   <div class="sub-bar"><div class="sub-left">
-    <div style="display:flex;gap:5px">${[i18n('allFilter'),i18n('residential'),i18n('land')].map(f=>`<button class="sfbtn${subF===f?' active':''}" onclick="setSF('${f}')">${f}</button>`).join('')}</div>
+    <div style="display:flex;gap:5px">${[{v:'Tümü',l:i18n('allFilter')},{v:'Konut',l:i18n('residential')},{v:'Arsa',l:i18n('land')}].map(f=>`<button class="sfbtn${subF===f.v?' active':''}" onclick="setSF('${f.v}')">${f.l}</button>`).join('')}</div>
     <button class="sfbtn sfbtn-me${showOnlyMine?' active':''}" onclick="toggleMine()"><i class="ti ti-user" style="font-size:11px"></i>${i18n('myListingsBtn')}</button>
     ${fBar(tid)}
   </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ${i18n('listing')}</span></div>
@@ -1173,7 +1176,7 @@ function renderPortfoy(c,ta){
   ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListingsFound')}</p></div></td></tr>`:''}
   ${fil.map(p=>{
     const isA=p.kategori==='Arsa';
-    const altTip=isA?(p.nitelik||i18n('land')):(p.konutTip||'');
+    const altTip=isA?(p.nitelik||'Arsa'):(p.konutTip||'');
     const alanStr=isA?(p.alan&&p.alan!='0'?p.alan+' m²':'-'):(p.brut&&p.brut!='0'?`B:${p.brut} N:${p.net||'-'}`:'-');
     const ilanSahibi=getUserName(p._uid);
     const editable=canEdit(p);
@@ -1181,7 +1184,7 @@ function renderPortfoy(c,ta){
     return `<tr data-row="1" data-baslik="${(p.baslik||'').toLowerCase()}" data-kategori="${(p.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-il="${(p.il||'').toLowerCase()}" data-ilce="${(p.ilce||'').toLowerCase()}" data-alan="${p.alan||p.brut||0}" data-fiyat="${p.fiyat||0}" data-portfoySahibi="${(p.musteriAd||'').toLowerCase()}" data-ilanSahibi="${ilanSahibi.toLowerCase()}" data-durum="${(p.durum||'').toLowerCase()}">
       <td><div class="cm">${p.baslik}</div><div class="cs">${p.adresDetay||''}</div></td>
       <td><span class="${bc(p.kategori)}">${tv(p.kategori)}</span></td>
-      <td>${altTip?`<span class="${bc(altTip)}">${altTip}</span>`:'-'}</td>
+      <td>${altTip?`<span class="${bc(altTip)}">${tv(altTip)}</span>`:'-'}</td>
       <td style="font-size:12px">${p.il||'-'}</td>
       <td style="font-size:12px">${p.ilce||'-'}</td>
       <td style="font-size:12px">${alanStr}</td>
@@ -1228,12 +1231,12 @@ function renderTalepler(c,ta){
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="10"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noRequestsFound')}</p></div></td></tr>`:''}
   ${fil.map(t=>{
-    const altTip=t.kategori===i18n('residential')?(t.konutTip||''):(t.arsaNitelik||'');
+    const altTip=t.kategori==='Konut'?(t.konutTip||''):(t.arsaNitelik||'');
     const sorumlu=getUserName(t._uid);
     const editable=canEdit(t);
     return `<tr data-row="1" data-musteri="${(t.musteri||'').toLowerCase()}" data-tip="${(t.tip||'').toLowerCase()}" data-kategori="${(t.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-bolge="${(t.bolge||'').toLowerCase()}" data-butce="${t.butce||0}" data-durum="${(t.durum||'').toLowerCase()}" data-tarih="${t.tarih||''}" data-sorumlu="${sorumlu.toLowerCase()}">
       <td class="cm">${t.musteri}</td><td><span class="${bc(t.tip)}">${tv(t.tip)}</span></td><td><span class="${bc(t.kategori)}">${tv(t.kategori)}</span></td>
-      <td>${altTip?`<span class="${bc(altTip)}">${altTip}</span>`:'-'}</td>
+      <td>${altTip?`<span class="${bc(altTip)}">${tv(altTip)}</span>`:'-'}</td>
       <td style="font-size:12px">${t.bolge||'-'}</td><td class="pc">${para(t.butce,t.tip===i18n('toRent'))}</td>
       <td><span class="${bc(t.durum)}">${tv(t.durum)}</span></td><td style="font-size:12px;color:var(--tx2)">${t.tarih||'-'}</td>
       <td style="font-size:12px"><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${sorumlu}</span></td>
@@ -1542,61 +1545,61 @@ function openModal(type,rid){
 
   if(type==='portfolio'){
     title=item?i18n('editListing'):i18n('newListing');
-    const kat=item?item.kategori:'Konut';const isA=kat===i18n('land');
+    const kat=item?item.kategori:'Konut';const isA=kat==='Arsa';
     const tip=item?item.tip:ptabTip;
     const ilOpts=Object.keys(ILLER).sort().map(il=>`<option${il===(item?.il||'')?' selected':''}>${il}</option>`).join('');
     const ilceOpts=(ILLER[item?.il||'']||[]).map(i=>`<option${i===(item?.ilce||'')?' selected':''}>${i}</option>`).join('');
     body=`
-    <div class="fdiv">Genel</div>
+    <div class="fdiv">${i18n('general')}</div>
     <div class="fr">
-      <div class="fg"><label>Tip</label><select id="f_tip" onchange="updDurumOpts()"><option${tip==='Satılık'?' selected':''}>Satılık</option><option${tip==='Kiralık'?' selected':''}>Kiralık</option></select></div>
-      <div class="fg"><label>Kategori</label><select id="f_kat" onchange="mTK(this.value)"><option value=i18n('residential')${!isA?' selected':''}>Konut</option><option value=i18n('land')${isA?' selected':''}>Arsa</option></select></div>
+      <div class="fg"><label>${i18n('type')}</label><select id="f_tip" onchange="updDurumOpts()"><option value="Satılık"${tip==='Satılık'?' selected':''}>${tv('Satılık')}</option><option value="Kiralık"${tip==='Kiralık'?' selected':''}>${tv('Kiralık')}</option></select></div>
+      <div class="fg"><label>${i18n('categoryLabel')}</label><select id="f_kat" onchange="mTK(this.value)"><option value="Konut"${!isA?' selected':''}>${tv('Konut')}</option><option value="Arsa"${isA?' selected':''}>${tv('Arsa')}</option></select></div>
     </div>
-    <div class="fg"><label>${i18n('title')}</label><input id="f_baslik" value="${item?item.baslik||'':''}" placeholder="İlan başlığı"></div>
-    <div class="fdiv">Konum</div>
+    <div class="fg"><label>${i18n('title')}</label><input id="f_baslik" value="${item?item.baslik||'':''}" placeholder="${i18n('titlePlaceholder')}"></div>
+    <div class="fdiv">${i18n('location')}</div>
     <div class="fr">
-      <div class="fg"><label>İl</label><select id="f_il" onchange="ilceDoldur('f_il','f_ilce')"><option value="">İl seçin</option>${ilOpts}</select></div>
-      <div class="fg"><label>İlçe</label><select id="f_ilce"><option value="">İlçe seçin</option>${ilceOpts}</select></div>
+      <div class="fg"><label>${i18n('province')}</label><select id="f_il" onchange="ilceDoldur('f_il','f_ilce')"><option value="">${i18n('selectProvince')}</option>${ilOpts}</select></div>
+      <div class="fg"><label>${i18n('district')}</label><select id="f_ilce"><option value="">${i18n('selectDistrict')}</option>${ilceOpts}</select></div>
     </div>
-    <div class="fg"><label>Adres Detayı</label><input id="f_adres" value="${item?item.adresDetay||'':''}" placeholder="Cadde, sokak, no…"></div>
+    <div class="fg"><label>${i18n('addressDetail')}</label><input id="f_adres" value="${item?item.adresDetay||'':''}" placeholder="${i18n('addressPlaceholder')}"></div>
     <div id="sk"${isA?' class="hidden"':''}>
-      <div class="fdiv">Konut</div>
+      <div class="fdiv">${i18n('residential')}</div>
       <div class="fr3">
-        <div class="fg"><label>Brüt (m²)</label><input id="f_brut" type="number" value="${item?item.brut||'':''}" placeholder="0"></div>
-        <div class="fg"><label>Net (m²)</label><input id="f_net" type="number" value="${item?item.net||'':''}" placeholder="0"></div>
-        <div class="fg"><label>Alan (m²)</label><input id="f_alan_k" type="number" value="${item?item.alanK||'':''}" placeholder="0"></div>
+        <div class="fg"><label>${i18n('gross')} (m²)</label><input id="f_brut" type="number" value="${item?item.brut||'':''}" placeholder="0"></div>
+        <div class="fg"><label>${i18n('net')} (m²)</label><input id="f_net" type="number" value="${item?item.net||'':''}" placeholder="0"></div>
+        <div class="fg"><label>${i18n('areaLabel')}</label><input id="f_alan_k" type="number" value="${item?item.alanK||'':''}" placeholder="0"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Konut Tipi</label><select id="f_kt"><option${(!item||item.konutTip===i18n('apartment'))?' selected':''}>Daire</option><option${(item&&item.konutTip===i18n('villa'))?' selected':''}>Villa</option><option${(item&&item.konutTip===i18n('detached'))?' selected':''}>Müstakil Ev</option></select></div>
-        <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_k">${durumOpts(tip,item?.durum||i18n('statusActive'))}</select></div>
+        <div class="fg"><label>${i18n('residentialTypeLabel')}</label><select id="f_kt"><option value="Daire"${(!item||item.konutTip==='Daire')?' selected':''}>${tv('Daire')}</option><option value="Villa"${(item&&item.konutTip==='Villa')?' selected':''}>${tv('Villa')}</option><option value="Müstakil Ev"${(item&&item.konutTip==='Müstakil Ev')?' selected':''}>${tv('Müstakil Ev')}</option></select></div>
+        <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_k">${durumOpts(tip,item?.durum||'Aktif')}</select></div>
       </div>
     </div>
     <div id="sa"${!isA?' class="hidden"':''}>
-      <div class="fdiv">Arsa</div>
+      <div class="fdiv">${i18n('land')}</div>
       <div class="fr">
-        <div class="fg"><label>Nitelik</label><select id="f_nitelik" onchange="mTN(this.value)"><option${(!item||item.nitelik===i18n('land'))?' selected':''}>Arsa</option><option${(item&&item.nitelik===i18n('qualityField'))?' selected':''}>Tarla</option><option${(item&&item.nitelik===i18n('qualityVillage'))?' selected':''}>Köyiçi İmar</option><option${(item&&item.nitelik===i18n('qualityOther'))?' selected':''}>Diğer</option></select></div>
-        <div class="fg"><label>Alan (m²)</label><input id="f_alan_a" type="number" value="${item?item.alan||'':''}" placeholder="0"></div>
+        <div class="fg"><label>${i18n('landQuality')}</label><select id="f_nitelik" onchange="mTN(this.value)"><option value="Arsa"${(!item||item.nitelik==='Arsa')?' selected':''}>${tv('Arsa')}</option><option value="Tarla"${(item&&item.nitelik==='Tarla')?' selected':''}>${tv('Tarla')}</option><option value="Köyiçi İmar"${(item&&item.nitelik==='Köyiçi İmar')?' selected':''}>${tv('Köyiçi İmar')}</option><option value="Diğer"${(item&&item.nitelik==='Diğer')?' selected':''}>${tv('Diğer')}</option></select></div>
+        <div class="fg"><label>${i18n('areaLabel')}</label><input id="f_alan_a" type="number" value="${item?item.alan||'':''}" placeholder="0"></div>
       </div>
-      <div class="fg${(item&&item.nitelik===i18n('qualityOther'))?'':' hidden'}" id="sna"><label>Nitelik Açıklaması</label><input id="f_na" value="${item?item.nitelikAciklama||'':''}" placeholder="Açıklayın…"></div>
+      <div class="fg${(item&&item.nitelik==='Diğer')?'':' hidden'}" id="sna"><label>${i18n('qualityDesc')}</label><input id="f_na" value="${item?item.nitelikAciklama||'':''}" placeholder="${i18n('qualityDescPlaceholder')}"></div>
       <div class="fr">
-        <div class="fg"><label>Mahalle</label><input id="f_mahalle" value="${item?item.mahalle||'':''}" placeholder="Mahalle"></div>
-        <div class="fg"><label>Ada No</label><input id="f_ada" value="${item?item.ada||'':''}" placeholder="Ada"></div>
+        <div class="fg"><label>${i18n('neighborhood')}</label><input id="f_mahalle" value="${item?item.mahalle||'':''}" placeholder="${i18n('neighborhood')}"></div>
+        <div class="fg"><label>${i18n('blockNo')}</label><input id="f_ada" value="${item?item.ada||'':''}" placeholder="${i18n('blockNo')}"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label>Parsel No</label><input id="f_parsel" value="${item?item.parsel||'':''}" placeholder="Parsel"></div>
-        <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_a">${durumOpts(tip,item?.durum||i18n('statusActive'))}</select></div>
+        <div class="fg"><label>${i18n('parcelNo')}</label><input id="f_parsel" value="${item?item.parsel||'':''}" placeholder="${i18n('parcelNo')}"></div>
+        <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_a">${durumOpts(tip,item?.durum||'Aktif')}</select></div>
       </div>
     </div>
-    <div class="fdiv">Portföy Sahibi & Fiyat</div>
+    <div class="fdiv">${i18n('ownerPriceSection')}</div>
     <div class="fr">
       <div class="fg"><label>${i18n('portfolioOwnerLabel')}</label>
         <div class="ac-wrap">
-          <input id="f_mi" autocomplete="off" value="${item?item.musteriAd||'':''}" placeholder="Yazın veya listeden seçin…" oninput="acS(this.value)" onfocus="acS(this.value)">
+          <input id="f_mi" autocomplete="off" value="${item?item.musteriAd||'':''}" placeholder="${i18n('ownerPlaceholder')}" oninput="acS(this.value)" onfocus="acS(this.value)">
           <input type="hidden" id="f_mid" value="${item?item.musteriId||'':''}">
           <div class="ac-list" id="acl" style="display:none"></div>
         </div>
       </div>
-      <div class="fg"><label>Fiyat (₺)</label><input id="f_fiyat" value="${item?fmtFiyat(item.fiyat):''}" placeholder="0" oninput="this.value=fmtFiyat(this.value)"></div>
+      <div class="fg"><label>${i18n('priceLabel')}</label><input id="f_fiyat" value="${item?fmtFiyat(item.fiyat):''}" placeholder="0" oninput="this.value=fmtFiyat(this.value)"></div>
     </div>
     ${ownerField()}
     <div class="fg"><label>${i18n('noteLabel')}</label><textarea id="f_not">${item?item.not||'':''}</textarea></div>`;
@@ -1762,11 +1765,11 @@ function closeModal(){const e=el('modal-overlay');if(e)e.remove();modalType=null
 function updDurumOpts(){
   const tip=sv('f_tip');
   const sk=el('f_durum_k');const sa=el('f_durum_a');
-  if(sk)sk.innerHTML=durumOpts(tip,i18n('statusActive'));
-  if(sa)sa.innerHTML=durumOpts(tip,i18n('statusActive'));
+  if(sk)sk.innerHTML=durumOpts(tip,'Aktif');
+  if(sa)sa.innerHTML=durumOpts(tip,'Aktif');
 }
-function mTK(v){const isA=v===i18n('land');el('sk')?.classList.toggle('hidden',isA);el('sa')?.classList.toggle('hidden',!isA);}
-function mTN(v){el('sna')?.classList.toggle('hidden',v!==i18n('qualityOther'));}
+function mTK(v){const isA=v==='Arsa';el('sk')?.classList.toggle('hidden',isA);el('sa')?.classList.toggle('hidden',!isA);}
+function mTN(v){el('sna')?.classList.toggle('hidden',v!=='Diğer');}
 function tTK(v){const isA=v===i18n('land');el('tk')?.classList.toggle('hidden',isA);el('ta2')?.classList.toggle('hidden',!isA);}
 function tTN(v){el('taa')?.classList.toggle('hidden',v!==i18n('qualityOther'));}
 function acS(q){const l=el('acl');if(!l)return;if(!q){l.style.display='none';return;}const fil=musteriler.filter(m=>m.ad.toLowerCase().includes(q.toLowerCase())||(m.tel||'').includes(q));if(!fil.length){l.style.display='none';return;}l.innerHTML=fil.map(m=>`<div class="ac-item" onclick="acSel('${m._rid}','${m.ad.replace(/'/g,"\\'")}')"><div class="ac-name">${m.ad}</div><div class="ac-tel">${m.tel||''}</div></div>`).join('');l.style.display='block';}
@@ -1811,8 +1814,8 @@ async function saveItem(){
   try{
     const ownerUid=sv('f_owner')||currentUser.id;
     if(modalType==='portfolio'){
-      const kat=sv('f_kat');const isA=kat===i18n('land');
-      if(!sv('f_baslik')){alert('Başlık zorunlu');return;}
+      const kat=sv('f_kat');const isA=kat==='Arsa';
+      if(!sv('f_baslik')){alert(i18n('titleRequired'));return;}
       const fiyatRaw=parseFiyat(sv('f_fiyat'));
       const obj={
         tip:sv('f_tip'),kategori:kat,konutTip:isA?'':sv('f_kt'),
