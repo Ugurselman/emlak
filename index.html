@@ -1485,6 +1485,7 @@ async function deleteTenant(id){
     return;
   }
   if(!confirm(`"${t?.name}" şirketini silmek istediğinizden emin misiniz?`))return;
+  await sb.from('invitations').delete().eq('tenant_id',id);
   const{error}=await sb.from('tenants').delete().eq('id',id);
   if(error){alert('Silme hatası: '+error.message);return;}
   tenants=tenants.filter(t=>t.id!==id);
