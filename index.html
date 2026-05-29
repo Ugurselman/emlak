@@ -908,17 +908,20 @@ async function doInviteRegister(){
     const{data:inv}=await sb.from('invitations').select('*').eq('email',email).is('used_at',null).order('created_at',{ascending:false}).limit(1);
     const invite=inv&&inv.length>0?inv[0]:null;
     if(invite){
-      // Profili güncelle
-      await sb.from('profiles').upsert({
+      // Profili oluştur/güncelle
+      const{error:profErr}=await sb.from('profiles').upsert({
         id:session.user.id,
         tenant_id:invite.tenant_id,
         full_name:name,
         role:invite.role,
-        is_active:true,
-        email:email,
-        tel:tel
+        is_active:true
       });
-      // Daveti kullanıldı olarak işaretle
+      if(profErr){
+        el('i_err').innerHTML=`<div class="auth-err">Hesap oluşturulamadı: ${profErr.message}</div>`;
+        btn.disabled=false;btn.textContent='Hesabımı Oluştur';
+        return;
+      }
+      // Daveti kullanıldı olarak işaretle (sadece profil başarılıysa)
       await sb.from('invitations').update({used_at:new Date().toISOString()}).eq('id',invite.id);
     } else {
       // Davet bulunamadı, profil zaten var mı kontrol et
@@ -1951,7 +1954,20 @@ if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.se
 async function initSession(session){
   currentUser=session.user;
   const{data:profiles}=await sb.from('profiles').select('*').eq('id',currentUser.id);
-  const profile=profiles&&profiles.length>0?profiles[0]:null;
+  let profile=profiles&&profiles.length>0?profiles[0]:null;
+  // Profil yoksa veya tenant_id eksikse daveti bul ve uygula (kurtarma mekanizması)
+  if((!profile||!profile.tenant_id)&&profile?.role!=='superadmin'){
+    const{data:inv}=await sb.from('invitations').select('*').eq('email',currentUser.email).order('created_at',{ascending:false}).limit(1);
+    if(inv&&inv.length>0){
+      const invite=inv[0];
+      const{error:pErr}=await sb.from('profiles').upsert({id:currentUser.id,tenant_id:invite.tenant_id,full_name:profile?.full_name||invite.full_name||'',role:invite.role,is_active:true});
+      if(!pErr){
+        if(!invite.used_at)await sb.from('invitations').update({used_at:new Date().toISOString()}).eq('id',invite.id);
+        const{data:p2}=await sb.from('profiles').select('*').eq('id',currentUser.id);
+        profile=p2&&p2.length>0?p2[0]:null;
+      }
+    }
+  }
   if(!profile){renderAuth('login','Hesabınız henüz yapılandırılmamış. Yöneticinizle iletişime geçin.');return;}
   if(profile.is_active===false){renderAuth('login',i18n('accountPassive'));return;}
   // Superadmin için tenant_id yoksa varsayılan ata
