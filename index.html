@@ -1928,9 +1928,13 @@ async function saveItem(){
         toast('Şirket oluşturuldu, Broker\'a davet maili gönderildi ✓');
       }
     }
-    closeModal();syncBar(i18n('saved'));render();
-  }catch(e){syncBar(i18n('errorSave')+' '+e.message,true);alert('Hata: '+e.message);}
-  finally{if(btn){btn.disabled=false;btn.textContent='Kaydet';}}
+    closeModal();syncBar(i18n('saved'));
+    try{render();}catch(re){console.error('Render hatası:',re);}
+  }catch(e){
+    console.error('Kaydetme hatası:',e);
+    syncBar(i18n('errorSave')+' '+(e?.message||e),true);
+    alert('Kaydetme hatası:\n'+(e?.message||JSON.stringify(e)));
+  }finally{if(btn){btn.disabled=false;btn.textContent=i18n('save');}}
 }
 
 // ── SİL ────────────────────────────────────────────────
