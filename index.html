@@ -264,6 +264,7 @@ const LANGS = {
     addressDetail: 'Adres Detayı', addressPlaceholder: 'Cadde, sokak, no…',
     areaLabel: 'Alan (m²)', gross: 'Brüt', net: 'Net',
     residentialType: 'Konut Tipi', apartment: 'Daire', villa: 'Villa', detached: 'Müstakil Ev',
+    odaSayisi: 'Oda Sayısı', furnitureLabel: 'Durumu', esyali: 'Eşyalı', esyasiz: 'Eşyasız', binaYasi: 'Bina Yaşı', newBuild: 'Sıfır', years: 'yıl',
     statusLabel: 'Durum',
     landQuality: 'Nitelik', landArea: 'Alan (m²)',
     qualityDesc: 'Nitelik Açıklaması', qualityDescPlaceholder: 'Açıklayın…',
@@ -412,6 +413,7 @@ const LANGS = {
     addressDetail: 'Address Detail', addressPlaceholder: 'Street, no…',
     areaLabel: 'Area (m²)', gross: 'Gross', net: 'Net',
     residentialType: 'Type', apartment: 'Apartment', villa: 'Villa', detached: 'Detached House',
+    odaSayisi: 'Room Count', furnitureLabel: 'Condition', esyali: 'Furnished', esyasiz: 'Unfurnished', binaYasi: 'Building Age', newBuild: 'New Build', years: 'yrs',
     statusLabel: 'Status',
     landQuality: 'Quality', landArea: 'Area (m²)',
     qualityDesc: 'Quality Description', qualityDescPlaceholder: 'Describe…',
@@ -550,6 +552,7 @@ const LANGS = {
     addressDetail: 'Адрес', addressPlaceholder: 'Улица, номер…',
     areaLabel: 'Площадь (м²)', gross: 'Общая', net: 'Жилая',
     residentialType: 'Тип', apartment: 'Квартира', villa: 'Вилла', detached: 'Частный дом',
+    odaSayisi: 'Кол. комнат', furnitureLabel: 'Состояние', esyali: 'С мебелью', esyasiz: 'Без мебели', binaYasi: 'Возраст', newBuild: 'Новостройка', years: 'лет',
     statusLabel: 'Статус',
     landQuality: 'Тип', landArea: 'Площадь (м²)',
     qualityDesc: 'Описание типа', qualityDescPlaceholder: 'Опишите…',
@@ -649,6 +652,8 @@ function tv(val){
     'Daire':{'en':'Apartment','ru':'Квартира'},
     'Villa':{'en':'Villa','ru':'Вилла'},
     'Müstakil Ev':{'en':'Detached House','ru':'Частный дом'},
+    'Eşyalı':{'en':'Furnished','ru':'С мебелью'},
+    'Eşyasız':{'en':'Unfurnished','ru':'Без мебели'},
     'Tarla':{'en':'Field','ru':'Поле'},
     'Köyiçi İmar':{'en':'Village Zone','ru':'Сельская зона'},
     'Köyiçi İmarlı':{'en':'Village Zone','ru':'Сельская зона'},
@@ -1177,7 +1182,7 @@ function renderPortfoy(c,ta){
     const editable=canEdit(p);
     const deletable=canDelete();
     return `<tr data-row="1" data-baslik="${(p.baslik||'').toLowerCase()}" data-kategori="${(p.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-il="${(p.il||'').toLowerCase()}" data-ilce="${(p.ilce||'').toLowerCase()}" data-alan="${p.alan||p.brut||0}" data-fiyat="${p.fiyat||0}" data-portfoySahibi="${(p.musteriAd||'').toLowerCase()}" data-ilanSahibi="${ilanSahibi.toLowerCase()}" data-durum="${(p.durum||'').toLowerCase()}">
-      <td><div class="cm">${p.baslik}</div><div class="cs">${p.adresDetay||''}</div></td>
+      <td><div class="cm">${p.baslik}</div><div class="cs">${p.adresDetay||''}</div>${!isA&&(p.odaSayisi||p.esyaDurum||p.binaYasi)?`<div class="cs">${[p.odaSayisi,p.esyaDurum?tv(p.esyaDurum):'',p.binaYasi?(p.binaYasi==='0'?i18n('newBuild'):`${p.binaYasi} ${i18n('years')}`):''].filter(Boolean).join(' · ')}</div>`:''}</td>
       <td><span class="${bc(p.kategori)}">${tv(p.kategori)}</span></td>
       <td>${altTip?`<span class="${bc(altTip)}">${tv(altTip)}</span>`:'-'}</td>
       <td style="font-size:12px">${p.il||'-'}</td>
@@ -1569,6 +1574,11 @@ function openModal(type,rid){
         <div class="fg"><label>${i18n('residentialTypeLabel')}</label><select id="f_kt"><option value="Daire"${(!item||item.konutTip==='Daire')?' selected':''}>${tv('Daire')}</option><option value="Villa"${(item&&item.konutTip==='Villa')?' selected':''}>${tv('Villa')}</option><option value="Müstakil Ev"${(item&&item.konutTip==='Müstakil Ev')?' selected':''}>${tv('Müstakil Ev')}</option></select></div>
         <div class="fg"><label>${i18n('statusLabel2')}</label><select id="f_durum_k">${durumOpts(tip,item?.durum||'Aktif')}</select></div>
       </div>
+      <div class="fr3">
+        <div class="fg"><label>${i18n('odaSayisi')}</label><select id="f_oda"><option value="">-</option>${['1+0','1+1','2+1','3+1','3+2','4+1','4+2','5+1','5+'].map(o=>`<option value="${o}"${item?.odaSayisi===o?' selected':''}>${o}</option>`).join('')}</select></div>
+        <div class="fg"><label>${i18n('furnitureLabel')}</label><select id="f_esya"><option value="">-</option><option value="Eşyalı"${item?.esyaDurum==='Eşyalı'?' selected':''}>${tv('Eşyalı')}</option><option value="Eşyasız"${item?.esyaDurum==='Eşyasız'?' selected':''}>${tv('Eşyasız')}</option></select></div>
+        <div class="fg"><label>${i18n('binaYasi')}</label><select id="f_bina"><option value="">-</option><option value="0"${item?.binaYasi==='0'?' selected':''}>${i18n('newBuild')}</option>${['1-5','6-10','11-15','16-20','21+'].map(r=>`<option value="${r}"${item?.binaYasi===r?' selected':''}>${r} ${i18n('years')}</option>`).join('')}</select></div>
+      </div>
     </div>
     <div id="sa"${!isA?' class="hidden"':''}>
       <div class="fdiv">${i18n('land')}</div>
@@ -1814,6 +1824,7 @@ async function saveItem(){
       const fiyatRaw=parseFiyat(sv('f_fiyat'));
       const obj={
         tip:sv('f_tip'),kategori:kat,konutTip:isA?'':sv('f_kt'),
+        odaSayisi:isA?'':sv('f_oda')||'',esyaDurum:isA?'':sv('f_esya')||'',binaYasi:isA?'':sv('f_bina')||'',
         baslik:sv('f_baslik'),il:sv('f_il'),ilce:sv('f_ilce'),adresDetay:sv('f_adres'),
         brut:isA?'0':sv('f_brut')||'0',net:isA?'0':sv('f_net')||'0',
         alanK:isA?'0':sv('f_alan_k')||'0',alan:isA?sv('f_alan_a')||'0':'0',
