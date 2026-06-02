@@ -1170,7 +1170,7 @@ function renderPortfoy(c,ta){
     ${fBar(tid)}
   </div><span style="font-size:12px;color:var(--tx3)">${fil.length} ${i18n('listing')}</span></div>
   <div class="tw"><table id="${tid}"><thead><tr>
-    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'kategori',i18n('colCategory'),'80px')}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea'),'80px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'portfoySahibi',i18n('colOwner'))}${mTH(tid,'ilanSahibi',i18n('listingAgentLabel'))}${mTH(tid,'durum',i18n('colStatus'),'100px')}
+    ${mTH(tid,'baslik',i18n('colListing'))}${mTH(tid,'altTip',i18n('colSubType'),'90px')}${mTH(tid,'il',i18n('colProvince'),'70px')}${mTH(tid,'ilce',i18n('colDistrict'),'90px')}${mTH(tid,'alan',i18n('colArea')+' (m²)','80px')}${mTH(tid,'oda',i18n('odaSayisi'),'75px')}${mTH(tid,'esya',i18n('furnitureLabel'),'85px')}${mTH(tid,'fiyat',i18n('colPrice'))}${mTH(tid,'ilanSahibi',i18n('listingAgentLabel'))}${mTH(tid,'durum',i18n('colStatus'),'100px')}
     <th><div class="th-inner"><span class="th-label"></span></div></th>
   </tr></thead><tbody>
   ${fil.length===0?`<tr><td colspan="11"><div class="empty"><i class="ti ti-inbox"></i><p>${i18n('noListingsFound')}</p></div></td></tr>`:''}
@@ -1181,18 +1181,19 @@ function renderPortfoy(c,ta){
     const ilanSahibi=getUserName(p._uid);
     const editable=canEdit(p);
     const deletable=canDelete();
-    return `<tr data-row="1" data-baslik="${(p.baslik||'').toLowerCase()}" data-kategori="${(p.kategori||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-il="${(p.il||'').toLowerCase()}" data-ilce="${(p.ilce||'').toLowerCase()}" data-alan="${p.alan||p.brut||0}" data-fiyat="${p.fiyat||0}" data-portfoySahibi="${(p.musteriAd||'').toLowerCase()}" data-ilanSahibi="${ilanSahibi.toLowerCase()}" data-durum="${(p.durum||'').toLowerCase()}">
-      <td><div class="cm">${p.baslik}</div><div class="cs">${p.adresDetay||''}</div>${!isA&&(p.odaSayisi||p.esyaDurum||p.binaYasi)?`<div class="cs">${[p.odaSayisi,p.esyaDurum?tv(p.esyaDurum):'',p.binaYasi?(p.binaYasi==='0'?i18n('newBuild'):`${p.binaYasi} ${i18n('years')}`):''].filter(Boolean).join(' · ')}</div>`:''}</td>
-      <td><span class="${bc(p.kategori)}">${tv(p.kategori)}</span></td>
+    return `<tr data-row="1" data-baslik="${(p.baslik||'').toLowerCase()}" data-altTip="${altTip.toLowerCase()}" data-il="${(p.il||'').toLowerCase()}" data-ilce="${(p.ilce||'').toLowerCase()}" data-alan="${p.alan||p.brut||0}" data-oda="${(p.odaSayisi||'').toLowerCase()}" data-esya="${(p.esyaDurum||'').toLowerCase()}" data-fiyat="${p.fiyat||0}" data-ilanSahibi="${ilanSahibi.toLowerCase()}" data-durum="${(p.durum||'').toLowerCase()}">
+      <td><div class="cm">${p.baslik}</div><div class="cs">${p.adresDetay||''}</div></td>
       <td>${altTip?`<span class="${bc(altTip)}">${tv(altTip)}</span>`:'-'}</td>
       <td style="font-size:12px">${p.il||'-'}</td>
       <td style="font-size:12px">${p.ilce||'-'}</td>
       <td style="font-size:12px">${alanStr}</td>
+      <td style="font-size:12px">${p.odaSayisi||'-'}</td>
+      <td style="font-size:12px">${p.esyaDurum?`<span class="badge b-neu">${tv(p.esyaDurum)}</span>`:'-'}</td>
       <td class="pc">${para(p.fiyat,tipL==='Kiralık')}</td>
-      <td style="font-size:12px">${p.musteriAd||'-'}</td>
       <td style="font-size:12px"><span style="background:var(--prl);color:var(--pr);padding:2px 7px;border-radius:12px;font-size:11px">${ilanSahibi}</span></td>
       <td><span class="${bc(p.durum)}">${tv(p.durum)}</span></td>
       <td><div class="ar">
+        <button class="ab" onclick="viewItem('portfolio','${p._rid}')" title="${i18n('listing')}"><i class="ti ti-eye"></i></button>
         ${editable?`<button class="ab" onclick="openModal('portfolio','${p._rid}')"><i class="ti ti-edit"></i></button>`:'<button class="ab" disabled><i class="ti ti-edit"></i></button>'}
         ${deletable?`<button class="ab del" onclick="delItem('portfolio','${p._rid}')"><i class="ti ti-trash"></i></button>`:''}
       </div></td>
@@ -1205,9 +1206,10 @@ function excelPortfoy(){
   const tipL=ptab==='satilik'?'Satılık':'Kiralık';
   const fil=portfolio.filter(p=>p.tip===tipL);
   exportExcel(fil.map(p=>({...p,ilanSahibi:getUserName(p._uid),fiyatFmt:para(p.fiyat,tipL==='Kiralık')})),[
-    {key:'baslik',label:i18n('title')},{key:'kategori',label:i18n('colCategory')},{key:'konutTip',label:i18n('residentialType')},{key:'nitelik',label:i18n('landQuality')},
-    {key:'il',label:i18n('province')},{key:'ilce',label:i18n('district')},{key:'adresDetay',label:i18n('addressDetail')},
-    {key:'brut',label:i18n('gross')},{key:'net',label:i18n('net')},{key:'alan',label:'Alan m²'},
+    {key:'baslik',label:i18n('title')},{key:'kategori',label:i18n('colCategory')},{key:'konutTip',label:i18n('residentialType')},
+    {key:'odaSayisi',label:i18n('odaSayisi')},{key:'esyaDurum',label:i18n('furnitureLabel')},{key:'binaYasi',label:i18n('binaYasi')},
+    {key:'nitelik',label:i18n('landQuality')},{key:'il',label:i18n('province')},{key:'ilce',label:i18n('district')},
+    {key:'adresDetay',label:i18n('addressDetail')},{key:'brut',label:i18n('gross')},{key:'net',label:i18n('net')},{key:'alan',label:'Alan m²'},
     {key:'fiyatFmt',label:i18n('colPrice')},{key:'musteriAd',label:i18n('portfolioOwnerLabel')},
     {key:'ilanSahibi',label:i18n('listingAgentLabel')},{key:'durum',label:i18n('colStatus')},{key:'not',label:i18n('colNote')}
   ],`${tipL}_portfoy`,'tbl-p');
@@ -1764,6 +1766,52 @@ function openModal(type,rid){
     setTimeout(()=>updatePortfoyList(initTip,item?.portfoyAd||''),20);
   }
   document.addEventListener('click',acOut);
+}
+
+function viewItem(type,rid){
+  let item=null;
+  if(type==='portfolio')item=portfolio.find(p=>p._rid==rid);
+  if(!item)return;
+  const isA=item.kategori==='Arsa';
+  const ilanSahibi=getUserName(item._uid);
+  const row=(lbl,val)=>val?`<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--bd)"><span style="font-size:11px;color:var(--tx2);min-width:130px;flex-shrink:0">${lbl}</span><span style="font-size:13px;color:var(--tx)">${val}</span></div>`:'';
+  const konutDetay=!isA?[
+    row(i18n('residentialTypeLabel'),item.konutTip?tv(item.konutTip):''),
+    row(i18n('gross')+' (m²)',item.brut&&item.brut!='0'?item.brut:''),
+    row(i18n('net')+' (m²)',item.net&&item.net!='0'?item.net:''),
+    row(i18n('odaSayisi'),item.odaSayisi||''),
+    row(i18n('furnitureLabel'),item.esyaDurum?tv(item.esyaDurum):''),
+    row(i18n('binaYasi'),item.binaYasi?(item.binaYasi==='0'?i18n('newBuild'):`${item.binaYasi} ${i18n('years')}`):''  ),
+  ].join(''):[
+    row(i18n('landQuality'),item.nitelik?tv(item.nitelik):''),
+    row(i18n('qualityDesc'),item.nitelikAciklama||''),
+    row(i18n('areaLabel'),item.alan&&item.alan!='0'?item.alan+' m²':''),
+    row(i18n('neighborhood'),item.mahalle||''),
+    row(i18n('blockNo'),item.ada||''),
+    row(i18n('parcelNo'),item.parsel||''),
+  ].join('');
+  const body=`
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">
+      <span class="${bc(item.tip)}">${tv(item.tip)}</span>
+      <span class="${bc(item.kategori)}">${tv(item.kategori)}</span>
+      <span class="${bc(item.durum)}">${tv(item.durum)}</span>
+    </div>
+    <div class="fdiv">${i18n('location')}</div>
+    ${row(i18n('province'),item.il||'')}${row(i18n('district'),item.ilce||'')}${row(i18n('addressDetail'),item.adresDetay||'')}
+    <div class="fdiv" style="margin-top:8px">${isA?i18n('land'):i18n('residential')}</div>
+    ${konutDetay}
+    <div class="fdiv" style="margin-top:8px">${i18n('ownerPriceSection')}</div>
+    ${row(i18n('portfolioOwnerLabel'),item.musteriAd||'')}
+    ${row(i18n('priceLabel'),item.fiyat?para(item.fiyat,item.tip==='Kiralık'):'')}
+    ${row(i18n('listingAgentLabel'),ilanSahibi)}
+    ${item.not?`<div class="fdiv" style="margin-top:8px">${i18n('notes')}</div>${row(i18n('notes'),item.not)}`:''}
+  `;
+  const ov=document.createElement('div');ov.className='overlay';ov.id='modal-overlay';ov.addEventListener('click',e=>{if(e.target===ov)closeModal();});
+  const md=document.createElement('div');md.className='modal';
+  const mh=document.createElement('div');mh.className='mh';mh.innerHTML=`<h3>${item.baslik}</h3><button class="mx" onclick="closeModal()"><i class="ti ti-x"></i></button>`;
+  const mb=document.createElement('div');mb.className='mb';mb.innerHTML=body;
+  const mf=document.createElement('div');mf.className='mf';mf.innerHTML=`<button class="bc" onclick="closeModal()">${i18n('close')}</button>${canEdit(item)?`<button class="bs" onclick="closeModal();openModal('portfolio','${item._rid}')">${i18n('edit')}</button>`:''}`;
+  md.appendChild(mh);md.appendChild(mb);md.appendChild(mf);ov.appendChild(md);document.body.appendChild(ov);
 }
 
 function closeModal(){const e=el('modal-overlay');if(e)e.remove();modalType=null;editId=null;document.removeEventListener('click',acOut);}
