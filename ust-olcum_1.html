@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0B3D2E">
+<title>UST Ölçüm — AR Mesafe &amp; Alan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --emerald:#0B3D2E;
+    --emerald-deep:#072A20;
+    --gold:#C9A227;
+    --gold-soft:#E4C86A;
+    --cream:#F5EFE0;
+    --ink:#10241D;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{height:100%;overflow:hidden;font-family:'Inter',sans-serif;background:var(--emerald)}
+  canvas{position:fixed;inset:0}
+
+  /* ---------- Başlangıç ekranı ---------- */
+  #start-screen{
+    position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+    justify-content:center;align-items:center;text-align:center;
+    background:radial-gradient(120% 90% at 50% 0%, #10513D 0%, var(--emerald) 55%, var(--emerald-deep) 100%);
+    color:var(--cream);padding:32px 28px;
+  }
+  .eyebrow{font-size:12px;letter-spacing:.32em;color:var(--gold-soft);text-transform:uppercase;font-weight:600}
+  h1{font-family:'Playfair Display',serif;font-size:44px;font-weight:700;margin:14px 0 10px;color:var(--cream)}
+  .sub{font-size:15px;line-height:1.6;color:#CDE0D5;max-width:340px}
+  .rule{width:56px;height:2px;background:var(--gold);margin:26px auto;border-radius:2px}
+  .steps{font-size:14px;line-height:2;color:#B9D2C6;text-align:left;margin-bottom:34px}
+  .steps b{color:var(--gold-soft);font-weight:600}
+  #btn-start{
+    font-family:'Inter',sans-serif;font-size:17px;font-weight:600;color:var(--ink);
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    border:none;border-radius:999px;padding:18px 52px;cursor:pointer;
+    box-shadow:0 8px 28px rgba(201,162,39,.35);
+  }
+  #btn-start:disabled{opacity:.45;box-shadow:none}
+  #support-msg{margin-top:20px;font-size:13px;line-height:1.6;color:#E8B4A0;max-width:340px;min-height:20px}
+
+  /* ---------- AR overlay ---------- */
+  #overlay{position:fixed;inset:0;z-index:5;pointer-events:none}
+  #overlay.hidden{display:none}
+  #readout{
+    pointer-events:none;position:absolute;top:calc(14px + env(safe-area-inset-top));left:50%;
+    transform:translateX(-50%);
+    background:rgba(7,42,32,.82);border:1px solid rgba(201,162,39,.5);
+    color:var(--cream);border-radius:14px;padding:10px 18px;
+    font-size:14px;font-weight:500;white-space:nowrap;backdrop-filter:blur(6px);
+  }
+  #readout .val{color:var(--gold-soft);font-weight:600}
+  #hint{
+    pointer-events:none;position:absolute;bottom:150px;left:50%;transform:translateX(-50%);
+    color:var(--cream);font-size:13px;background:rgba(7,42,32,.66);
+    padding:8px 16px;border-radius:999px;max-width:86%;text-align:center;
+  }
+  #controls{
+    position:absolute;bottom:calc(18px + env(safe-area-inset-bottom));left:0;right:0;
+    display:flex;justify-content:center;align-items:center;gap:12px;pointer-events:none;
+  }
+  #controls button{
+    pointer-events:auto;font-family:'Inter',sans-serif;font-weight:600;border:none;cursor:pointer;
+  }
+  .btn-small{
+    width:58px;height:58px;border-radius:50%;font-size:11px;
+    background:rgba(7,42,32,.82);color:var(--cream);
+    border:1px solid rgba(245,239,224,.35)!important;backdrop-filter:blur(6px);
+  }
+  #btn-add{
+    width:84px;height:84px;border-radius:50%;font-size:13px;color:var(--ink);
+    background:linear-gradient(180deg,var(--gold-soft),var(--gold));
+    box-shadow:0 6px 22px rgba(201,162,39,.45);
+  }
+  #btn-add:disabled{opacity:.4;box-shadow:none}
+  .btn-small:disabled{opacity:.35}
+</style>
+</head>
+<body>
+
+<div id="start-screen">
+  <div class="eyebrow">UST Gayrimenkul</div>
+  <h1>AR Ölçüm</h1>
+  <p class="sub">Kamerayla oda içinde nokta koy; mesafeleri ve zemin alanını (m²) anında ölç.</p>
+  <div class="rule"></div>
+  <div class="steps">
+    <b>1.</b> Telefonu yavaşça gezdir, zemin algılansın<br>
+    <b>2.</b> Halka köşeye gelince <b>Nokta</b>'ya bas<br>
+    <b>3.</b> Tüm köşelerden sonra <b>Kapat</b> ile alanı al
+  </div>
+  <button id="btn-start" disabled>Taramayı Başlat</button>
+  <div id="support-msg">Cihaz kontrol ediliyor…</div>
+</div>
+
+<div id="overlay" class="hidden">
+  <div id="readout">Zemin aranıyor…</div>
+  <div id="hint">Telefonu yavaşça hareket ettir; yüzey algılanınca altın halka belirecek.</div>
+  <div id="controls">
+    <button id="btn-undo" class="btn-small">Geri&nbsp;Al</button>
+    <button id="btn-add">Nokta</button>
+    <button id="btn-close" class="btn-small">Kapat</button>
+    <button id="btn-clear" class="btn-small">Sıfırla</button>
+    <button id="btn-exit" class="btn-small">Çıkış</button>
+  </div>
+</div>
+
+<script type="module">
+import * as THREE from 'https://unpkg.com/three@0.160.0/build/three.module.js';
+
+const $ = id => document.getElementById(id);
+const GOLD = 0xC9A227, GOLD_SOFT = 0xE4C86A, CREAM = 0xF5EFE0;
+
+let renderer, scene, camera, reticle;
+let session = null, refSpace = null, hitTestSource = null;
+let reticleVisible = false;
+
+let points = [];        // THREE.Vector3
+let spheres = [];       // point markers
+let segments = [];      // {mesh,label} between consecutive points
+let closingSeg = null;  // segment last->first
+let areaLabel = null;
+let isClosed = false;
+
+/* ---------- destek kontrolü ---------- */
+async function checkSupport(){
+  const msg = $('support-msg');
+  if (!window.isSecureContext){
+    msg.textContent = 'Bu sayfa HTTPS üzerinden açılmalı (Vercel adresini kullan).';
+    return;
+  }
+  if (!navigator.xr){
+    msg.textContent = 'Tarayıcı WebXR desteklemiyor. Sayfayı Samsung Internet yerine güncel Chrome ile aç ve "Google Play Hizmetleri (AR)" uygulamasının yüklü olduğundan emin ol.';
+    return;
+  }
+  try{
+    const ok = await navigator.xr.isSessionSupported('immersive-ar');
+    if (ok){
+      msg.textContent = '';
+      $('btn-start').disabled = false;
+    } else {
+      msg.textContent = 'Bu cihazda AR oturumu desteklenmiyor görünüyor. Play Store\u2019dan "Google Play Hizmetleri (AR)" (ARCore) yüklü mü kontrol et.';
+    }
+  } catch(e){
+    msg.textContent = 'AR desteği kontrol edilemedi: ' + e.message;
+  }
+}
+checkSupport();
+
+/* ---------- three.js kurulum ---------- */
+function initThree(){
+  renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
+  renderer.setPixelRatio(window.devicePixelRatio);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.xr.enabled = true;
+  document.body.appendChild(renderer.domElement);
+
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(70, window.innerWidth/window.innerHeight, 0.01, 30);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x445544, 1.2));
+
+  // altın halka + merkez nokta
+  reticle = new THREE.Group();
+  const ring = new THREE.Mesh(
+    new THREE.RingGeometry(0.055, 0.072, 40).rotateX(-Math.PI/2),
+    new THREE.MeshBasicMaterial({ color: GOLD_SOFT })
+  );
+  const dot = new THREE.Mesh(
+    new THREE.CircleGeometry(0.008, 24).rotateX(-Math.PI/2),
+    new THREE.MeshBasicMaterial({ color: GOLD_SOFT })
+  );
+  reticle.add(ring, dot);
+  reticle.matrixAutoUpdate = false;
+  reticle.visible = false;
+  scene.add(reticle);
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth/window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+}
+
+/* ---------- yardımcılar ---------- */
+const fmt = d => d < 1 ? `${Math.round(d*100)} cm` : `${d.toFixed(2)} m`;
+
+function makeLabel(text, big=false){
+  const c = document.createElement('canvas');
+  c.width = 320; c.height = 110;
+  const ctx = c.getContext('2d');
+  ctx.fillStyle = 'rgba(7,42,32,0.88)';
+  const r = 26;
+  ctx.beginPath();
+  ctx.roundRect(4, 4, c.width-8, c.height-8, r);
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(201,162,39,0.9)';
+  ctx.lineWidth = 4;
+  ctx.stroke();
+  ctx.fillStyle = '#F5EFE0';
+  ctx.font = '600 46px Inter, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, c.width/2, c.height/2 + 2);
+  const tex = new THREE.CanvasTexture(c);
+  tex.anisotropy = 4;
+  const spr = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest:false }));
+  const s = big ? 0.34 : 0.24;
+  spr.scale.set(s, s * (110/320), 1);
+  spr.renderOrder = 999;
+  return spr;
+}
+
+function makeSphere(pos){
+  const m = new THREE.Mesh(
+    new THREE.SphereGeometry(0.016, 20, 20),
+    new THREE.MeshBasicMaterial({ color: GOLD })
+  );
+  m.position.copy(pos);
+  return m;
+}
+
+function makeSegment(a, b){
+  const dir = new THREE.Vector3().subVectors(b, a);
+  const len = dir.length();
+  const mesh = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.0045, 0.0045, len, 8),
+    new THREE.MeshBasicMaterial({ color: CREAM })
+  );
+  mesh.position.copy(a).addScaledVector(dir, 0.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0), dir.clone().normalize());
+  const label = makeLabel(fmt(len));
+  label.position.copy(mesh.position);
+  label.position.y += 0.07;
+  scene.add(mesh, label);
+  return { mesh, label, len };
+}
+
+function removeSegment(seg){
+  scene.remove(seg.mesh, seg.label);
+  seg.mesh.geometry.dispose();
+  seg.label.material.map.dispose();
+  seg.label.material.dispose();
+}
+
+function perimeter(){
+  let t = segments.reduce((s, x) => s + x.len, 0);
+  if (closingSeg) t += closingSeg.len;
+  return t;
+}
+
+function polygonArea(){
+  // Shoelace — yatay düzleme (x,z) izdüşüm; zemin ölçümü için doğru sonuç verir
+  let s = 0;
+  const n = points.length;
+  for (let i = 0; i < n; i++){
+    const j = (i+1) % n;
+    s += points[i].x * points[j].z - points[j].x * points[i].z;
+  }
+  return Math.abs(s) / 2;
+}
+
+function updateReadout(){
+  const parts = [];
+  if (segments.length)
+    parts.push(`Son: <span class="val">${fmt(segments[segments.length-1].len)}</span>`);
+  if (points.length > 1)
+    parts.push(`Çevre: <span class="val">${fmt(perimeter())}</span>`);
+  if (isClosed)
+    parts.push(`Alan: <span class="val">${polygonArea().toFixed(2)} m²</span>`);
+  $('readout').innerHTML = parts.length ? parts.join(' &nbsp;·&nbsp; ')
+    : (reticleVisible ? 'Köşeye nişan al, Nokta\u2019ya bas' : 'Zemin aranıyor…');
+}
+
+function updateButtons(){
+  $('btn-add').disabled   = !reticleVisible || isClosed;
+  $('btn-undo').disabled  = points.length === 0;
+  $('btn-close').disabled = points.length < 3 || isClosed;
+  $('btn-clear').disabled = points.length === 0;
+}
+
+/* ---------- eylemler ---------- */
+function addPoint(){
+  if (!reticleVisible || isClosed) return;
+  const p = new THREE.Vector3().setFromMatrixPosition(reticle.matrix);
+  points.push(p);
+  const s = makeSphere(p);
+  spheres.push(s);
+  scene.add(s);
+  if (points.length > 1)
+    segments.push(makeSegment(points[points.length-2], p));
+  $('hint').style.display = 'none';
+  updateReadout(); updateButtons();
+}
+
+function closeShape(){
+  if (points.length < 3 || isClosed) return;
+  closingSeg = makeSegment(points[points.length-1], points[0]);
+  const area = polygonArea();
+  const center = points.reduce((a,p) => a.add(p.clone()), new THREE.Vector3()).divideScalar(points.length);
+  areaLabel = makeLabel(`${area.toFixed(2)} m²`, true);
+  areaLabel.position.copy(center);
+  areaLabel.position.y += 0.12;
+  scene.add(areaLabel);
+  isClosed = true;
+  updateReadout(); updateButtons();
+}
+
+function undo(){
+  if (isClosed){
+    removeSegment(closingSeg); closingSeg = null;
+    scene.remove(areaLabel); areaLabel = null;
+    isClosed = false;
+  } else if (points.length){
+    points.pop();
+    const s = spheres.pop();
+    scene.remove(s); s.geometry.dispose();
+    if (segments.length) removeSegment(segments.pop());
+  }
+  updateReadout(); updateButtons();
+}
+
+function clearAll(){
+  while (points.length || isClosed) undo();
+  $('hint').style.display = '';
+  updateReadout(); updateButtons();
+}
+
+/* ---------- AR oturumu ---------- */
+let hasDomOverlay = false;
+
+async function startAR(){
+  if (!renderer) initThree();
+
+  // Tarayıcı desteğine göre sırayla dene: tam donanım → dom-overlay isteğe bağlı → sade
+  const configs = [
+    { requiredFeatures:['hit-test','dom-overlay'], domOverlay:{ root: $('overlay') } },
+    { requiredFeatures:['hit-test'], optionalFeatures:['dom-overlay'], domOverlay:{ root: $('overlay') } },
+    { requiredFeatures:[], optionalFeatures:['hit-test','dom-overlay'], domOverlay:{ root: $('overlay') } }
+  ];
+  let lastErr = null;
+  session = null;
+  for (const cfg of configs){
+    try { session = await navigator.xr.requestSession('immersive-ar', cfg); break; }
+    catch(e){ lastErr = e; }
+  }
+  if (!session){
+    $('support-msg').textContent = 'AR oturumu başlatılamadı: ' +
+      (lastErr ? lastErr.message : 'bilinmeyen hata') +
+      ' — Sayfayı Samsung Internet yerine güncel Chrome ile açmayı dene.';
+    return;
+  }
+
+  hasDomOverlay = !!(session.domOverlayState && session.domOverlayState.type);
+
+  $('start-screen').style.display = 'none';
+  if (hasDomOverlay) $('overlay').classList.remove('hidden');
+
+  renderer.xr.setReferenceSpaceType('local');
+  await renderer.xr.setSession(session);
+  refSpace = await session.requestReferenceSpace('local');
+
+  try{
+    const viewerSpace = await session.requestReferenceSpace('viewer');
+    hitTestSource = await session.requestHitTestSource({ space: viewerSpace });
+  } catch(e){
+    $('support-msg').textContent = 'Yüzey algılama (hit-test) bu tarayıcıda desteklenmiyor: ' + e.message;
+    session.end();
+    return;
+  }
+
+  // Ekrana dokunma = nokta ekle (dom-overlay yoksa tek giriş yolu budur;
+  // varsa da butonlara ek kısayol olarak çalışır)
+  session.addEventListener('select', onSelect);
+  session.addEventListener('end', onSessionEnd);
+  renderer.setAnimationLoop(onFrame);
+  updateReadout(); updateButtons();
+}
+
+function onSelect(){
+  if (!reticleVisible || isClosed) return;
+  // 3+ nokta varken ilk noktanın 15 cm yakınına dokunulursa şekli kapat
+  if (points.length >= 3){
+    const p = new THREE.Vector3().setFromMatrixPosition(reticle.matrix);
+    if (p.distanceTo(points[0]) < 0.15){ closeShape(); return; }
+  }
+  addPoint();
+}
+
+function onFrame(time, frame){
+  if (frame && hitTestSource){
+    const hits = frame.getHitTestResults(hitTestSource);
+    if (hits.length){
+      const pose = hits[0].getPose(refSpace);
+      reticle.matrix.fromArray(pose.transform.matrix);
+      if (!reticleVisible){ reticleVisible = true; reticle.visible = true; updateReadout(); updateButtons(); }
+    } else if (reticleVisible){
+      reticleVisible = false; reticle.visible = false; updateReadout(); updateButtons();
+    }
+  }
+  renderer.render(scene, camera);
+}
+
+function onSessionEnd(){
+  renderer.setAnimationLoop(null);
+  hitTestSource = null; session = null;
+  clearAll();
+  $('overlay').classList.add('hidden');
+  $('start-screen').style.display = 'flex';
+}
+
+/* ---------- olaylar ---------- */
+$('btn-start').addEventListener('click', startAR);
+$('btn-add').addEventListener('click', addPoint);
+$('btn-undo').addEventListener('click', undo);
+$('btn-close').addEventListener('click', closeShape);
+$('btn-clear').addEventListener('click', clearAll);
+$('btn-exit').addEventListener('click', () => session && session.end());
+
+// Overlay butonlarına dokunma AR "select" olayını tetiklemesin
+$('overlay').addEventListener('beforexrselect', e => e.preventDefault());
+</script>
+</body>
+</html>
